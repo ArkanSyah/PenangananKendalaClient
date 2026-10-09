@@ -1,6 +1,7 @@
 import { createContext, useCallback, useContext, useEffect, useState } from 'react';
 import axios from 'axios';
 import { useAuth } from './AuthContext';
+import { setAppBadge, clearAppBadge } from './utils/appBadge';
 
 const NotificationContext = createContext(null);
 
@@ -61,6 +62,14 @@ export function NotificationProvider({ children }) {
   const refresh = useCallback(() => {
     fetchInApp();
   }, [fetchInApp]);
+
+  useEffect(() => {
+    if (unreadCount > 0) {
+      setAppBadge(unreadCount);
+    } else {
+      clearAppBadge();
+    }
+  }, [unreadCount]);
 
   const value = {
     items,

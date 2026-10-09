@@ -33,6 +33,7 @@ import NotificationSettings from './pages/NotificationSettings';
 import NotificationHistory from './pages/NotificationHistory';
 import PWAPrompt from './components/PWAPrompt';
 import OfflineBanner from './components/OfflineBanner';
+import { PWAStatusBanner } from './components/PWAStatusBanner';
 
 // Route Guard Component for Role-Based Access Control
 const ProtectedRoute = ({ children, allowedRoles }) => {
@@ -269,6 +270,7 @@ function App() {
           {/* Fallback Catch All */}
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
+        <PWAStatusBanner />
         </NotificationProvider>
       </BrowserRouter>
       <PWAPrompt />

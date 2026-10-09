@@ -2,11 +2,40 @@ import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Bell, BellRing } from 'lucide-react';
 import { useNotifications } from '../NotificationContext';
+import { subscribeUserToPush, sendTestPushNotification } from '../utils/pushManager';
 
 export default function NotificationBell() {
   const { items, unreadCount, markAsRead } = useNotifications();
   const [open, setOpen] = useState(false);
+  const [pushStatus, setPushStatus] = useState('');
+  const [pushLoading, setPushLoading] = useState(false);
   const ref = useRef(null);
+
+  const handleSubscribePush = async () => {
+    setPushLoading(true);
+    setPushStatus('');
+    try {
+      await subscribeUserToPush();
+      setPushStatus('✅ Push Notification aktif!');
+    } catch (err) {
+      setPushStatus(`❌ ${err.message || 'Gagal aktivasi push'}`);
+    } finally {
+      setPushLoading(false);
+    }
+  };
+
+  const handleSendTestPush = async () => {
+    setPushLoading(true);
+    setPushStatus('');
+    try {
+      const res = await sendTestPushNotification();
+      setPushStatus(`🚀 ${res.message || 'Push terkirim!'}`);
+    } catch (err) {
+      setPushStatus(`❌ ${err.response?.data?.message || 'Gagal kirim push'}`);
+    } finally {
+      setPushLoading(false);
+    }
+  };
 
   useEffect(() => {
     function handleClickOutside(e) {
@@ -78,12 +107,45 @@ export default function NotificationBell() {
             </ul>
           )}
 
-          <div className="border-t border-gray-100 px-4 py-2">
+          {/* Web Push Notification Controls (PWA Phase 3) */}
+          <div className="px-3 py-2 bg-slate-50 border-t border-gray-100 flex flex-col gap-1.5 shrink-0">
+            {pushStatus && (
+              <div className="text-[10px] font-semibold text-slate-700 bg-white p-1 rounded border border-slate-200">
+                {pushStatus}
+              </div>
+            )}
+            <div className="flex items-center gap-1.5">
+              <button
+                type="button"
+                onClick={handleSubscribePush}
+                disabled={pushLoading}
+                className="flex-1 py-1 px-2 bg-[#005662] hover:bg-[#003d46] text-white rounded text-[10px] font-bold transition-all disabled:opacity-50 cursor-pointer text-center"
+              >
+                {pushLoading ? '...' : '🔔 Aktifkan Push'}
+              </button>
+              <button
+                type="button"
+                onClick={handleSendTestPush}
+                disabled={pushLoading}
+                className="flex-1 py-1 px-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded text-[10px] font-bold transition-all disabled:opacity-50 cursor-pointer text-center"
+              >
+                🚀 Tes Push
+              </button>
+            </div>
+          </div>
+
+          <div className="border-t border-gray-100 px-4 py-2 flex items-center justify-between">
             <Link
               to="/settings/notifications/history"
               className="text-xs text-[#005662] hover:underline"
             >
               Lihat semua notifikasi →
+            </Link>
+            <Link
+              to="/settings/notifications"
+              className="text-xs text-gray-500 hover:underline"
+            >
+              Pengaturan ⚙️
             </Link>
           </div>
         </div>
