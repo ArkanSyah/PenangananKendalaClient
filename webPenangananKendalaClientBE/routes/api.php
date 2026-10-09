@@ -1,0 +1,113 @@
+<?php
+
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\TicketController;
+use App\Http\Controllers\AdminController;
+use App\Http\Controllers\BoardController;
+use App\Http\Controllers\NotificationPreferenceController;
+use App\Models\User;
+
+// Public Auth Routes
+Route::post('/login', [AuthController::class, 'login']);
+
+// Public: Forgot Password (Client self-service via email with rate limiting)
+Route::post('/forgot-password', [AuthController::class, 'forgotPassword'])->middleware('throttle:5,1');
+Route::post('/reset-password', [AuthController::class, 'resetPasswordFromToken']);
+
+// Authenticated Routes
+Route::middleware('auth:sanctum')->group(function () {
+    Route::post('/logout', [AuthController::class, 'logout']);
+    Route::get('/me', [AuthController::class, 'me']);
+    Route::put('/profile', [AuthController::class, 'updateProfile']);
+    Route::put('/profile/password', [AuthController::class, 'updatePassword']);
+
+    Route::get('/notification/preferences', [NotificationPreferenceController::class, 'show']);
+    Route::put('/notification/preferences', [NotificationPreferenceController::class, 'update']);
+    Route::get('/notification/logs', [NotificationPreferenceController::class, 'logs']);
+    Route::get('/notification/preview-digest', [NotificationPreferenceController::class, 'previewDigest']);
+    Route::get('/notifications/in-app', [\App\Http\Controllers\InAppNotificationController::class, 'index']);
+    Route::post('/notifications/in-app/{id}/read', [\App\Http\Controllers\InAppNotificationController::class, 'markRead']);
+
+    Route::patch('/board/move', [BoardController::class, 'move'])
+        ->middleware('role:owner,admin');
+
+    Route::get('/admin/quota', [\App\Http\Controllers\AdminQuotaController::class, 'show'])
+        ->middleware('role:admin');
+
+    // Tickets routes
+    Route::get('/tickets', [TicketController::class, 'index']);
+    Route::post('/tickets', [TicketController::class, 'store'])->middleware('role:service_desk');
+
+    // Claim workflow — must be defined BEFORE /tickets/{ticket}
+    Route::get('/tickets/available', [TicketController::class, 'availableTickets'])->middleware('role:programmer');
+    Route::get('/tickets/pending-claims', [TicketController::class, 'pendingClaimApprovals'])->middleware('role:project_manager');
+
+    // Walk-in Ticket (Service Desk creates ticket for non-registered client)
+    // IMPORTANT: Must be defined BEFORE /tickets/{ticket} to avoid route param conflict
+    Route::post('/tickets/walk-in', [TicketController::class, 'storeWalkIn'])->middleware('role:service_desk');
+
+    Route::get('/tickets/{ticket}', [TicketController::class, 'show']);
+    
+    // Client tickets routes (Client Only)
+    Route::middleware('role:client')->group(function () {
+        Route::get('/client/tickets', [TicketController::class, 'clientIndex']);
+        Route::post('/client/tickets', [TicketController::class, 'clientStore']);
+        Route::get('/client/tickets/{ticket}', [TicketController::class, 'clientShow']);
+    });
+    
+    // Assign Ticket (PM Only)
+    Route::post('/tickets/{ticket}/assign', [TicketController::class, 'assign'])->middleware('role:project_manager');
+
+    // Claim workflow actions
+    Route::post('/tickets/{ticket}/release-for-claim', [TicketController::class, 'releaseForClaim'])->middleware('role:project_manager');
+    Route::post('/tickets/{ticket}/claim', [TicketController::class, 'claimTicket'])->middleware('role:programmer');
+    Route::post('/tickets/{ticket}/approve-claim', [TicketController::class, 'approveClaim'])->middleware('role:project_manager');
+    Route::post('/tickets/{ticket}/reject-claim', [TicketController::class, 'rejectClaim'])->middleware('role:project_manager');
+
+    // Escalate Ticket (Service Desk Only)
+    Route::match(['post', 'put', 'patch'], '/tickets/{ticket}/escalate', [TicketController::class, 'escalate'])->middleware('role:service_desk');
+
+    // Confirm or Reject pending ticket from client (Service Desk Only)
+    Route::post('/tickets/{ticket}/confirm', [TicketController::class, 'confirmTicket'])->middleware('role:service_desk');
+
+    // Update Ticket Priority (PM Only, any status except closed/rejected)
+    Route::post('/tickets/{ticket}/priority', [TicketController::class, 'updatePriority'])->middleware('role:project_manager');
+
+    // Update Ticket Status
+    Route::post('/tickets/{ticket}/status', [TicketController::class, 'updateStatus']);
+
+    // Add Ticket Progress Log / Reply
+    Route::post('/tickets/{ticket}/logs', [TicketController::class, 'addLog']);
+
+    // PM Review of Programmer Work (OK / TIDAK OK)
+    Route::post('/tickets/{ticket}/pm-review', [TicketController::class, 'pmReview'])->middleware('role:project_manager');
+
+    // PM Escalate to Owner
+    Route::post('/tickets/{ticket}/escalate-owner', [TicketController::class, 'escalateOwner'])->middleware('role:project_manager');
+
+    // Owner Decision on Escalated Issues
+    Route::post('/tickets/{ticket}/owner-decision', [TicketController::class, 'ownerDecision'])->middleware('role:owner');
+
+    // Helper: List Programmers (For PM assign form)
+    Route::get('/programmers', function () {
+        return response()->json(User::where('role', 'programmer')->get(['id', 'name', 'email']));
+    })->middleware('role:project_manager');
+
+    // ─── Admin RBAC Routes ────────────────────────────────────────────────────────
+    Route::middleware('role:admin')->prefix('admin')->group(function () {
+        // User Management
+        Route::get('/users', [AdminController::class, 'getUsers']);
+        Route::post('/users', [AdminController::class, 'createUser']);
+        Route::put('/users/{user}', [AdminController::class, 'updateUser']);
+        Route::patch('/users/{user}/toggle-active', [AdminController::class, 'toggleActive']);
+        Route::post('/users/{user}/reset-password', [AdminController::class, 'resetPassword']);
+
+        // System Monitoring
+        Route::get('/stats', [AdminController::class, 'getStats']);
+
+        // Activity Logs
+        Route::get('/activity-logs', [AdminController::class, 'getActivityLogs']);
+    });
+});
