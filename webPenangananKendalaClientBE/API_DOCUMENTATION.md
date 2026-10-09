@@ -161,9 +161,25 @@ escalated_to_pm ──(PM Escalate)──► escalated_to_owner ──(Owner App
 
 ---
 
-## 5. Ringkasan Pengujian Backend (PHPUnit Test Suites)
+## 5. Dokumentasi Interaktif Swagger UI (OpenAPI 3.1)
 
-Total: **44 Test Cases**, **153 Assertions** (100% Passed)
+Sistem menyediakan antarmuka **Swagger UI interaktif** standar industri yang dapat diakses langsung tanpa memerlukan Postman:
+
+- **Swagger UI Portal**: [`http://localhost:8000/swagger`](http://localhost:8000/swagger) atau [`http://localhost:8000/api/documentation`](http://localhost:8000/api/documentation)
+- **OpenAPI 3.1 Specification JSON**: [`http://localhost:8000/swagger.json`](http://localhost:8000/swagger.json) atau [`http://localhost:8000/docs/api.json`](http://localhost:8000/docs/api.json)
+
+### Cara Menggunakan Swagger UI:
+1. Buka browser ke `http://localhost:8000/swagger`.
+2. Lakukan login via endpoint `POST /login` menggunakan akun demo (misal `admin@example.com`, password `password`).
+3. Salin nilai `access_token` dari respon.
+4. Klik tombol **Authorize (Gembok)** di pojok kanan atas Swagger UI, lalu masukkan: `Bearer <token_anda>`.
+5. Semua endpoint terlindungi (Admin, PM, Programmer, SD, Owner, Client) kini dapat diuji langsung via tombol **Try it out**!
+
+---
+
+## 6. Ringkasan Pengujian Backend (PHPUnit Test Suites)
+
+Total: **100 Test Cases**, **296 Assertions** (100% Passed) 🚀
 
 | File Test | Cakupan Uji |
 | :--- | :--- |
@@ -171,6 +187,17 @@ Total: **44 Test Cases**, **153 Assertions** (100% Passed)
 | `tests/Feature/AdminRbacTest.php` | Proteksi route admin, CRUD user, toggle status aktif, audit logging. |
 | `tests/Feature/TicketRbacTest.php` | Hak cipta tiket, assignment PM, isolasi programmer, visibilitas log internal. |
 | `tests/Feature/ClaimWorkflowTest.php` | Alur rilis ke pool, claim programmer, dan approval/rejection oleh PM. |
+| `tests/Feature/WalkInTicketTest.php` | Pembuatan tiket walk-in oleh Service Desk, metode kontak (telepon, WA, walk-in), log audit. |
+| `tests/Feature/ClientTicketTest.php` | Pembuatan tiket klien mandiri, isolasi data antar klien, penyembunyian log internal. |
+| `tests/Feature/TicketWorkflowEdgeCasesTest.php` | Konfirmasi/penolakan SD, update prioritas PM, guardrail status transition, review guardrail. |
+| `tests/Feature/BoardControllerTest.php` | Drag-and-drop status board, RBAC Owner/Admin, validasi enum, pencatatan otomatis progress log. |
 | `tests/Feature/NotificationSystemTest.php` | Preferensi notifikasi, in-app list, tandai dibaca, dan monitoring kuota admin. |
+| `tests/Feature/NotificationDigestAndPreferencesTest.php` | Riwayat log notifikasi, preview digest harian/per-jam, konfigurasi quiet hours. |
 | `tests/Feature/PwaIntegrationTest.php` | Health check endpoint, VAPID key sanitization, pendaftaran push subscription. |
+| `tests/Feature/SwaggerDocumentationTest.php` | Rute antarmuka Swagger UI, alias dokumentasi, dan validitas respon OpenAPI JSON. |
 | `tests/Unit/TicketModelTest.php` | Relasi Eloquent Ticket dengan Creator, Assignments, dan ProgressLogs. |
+| `tests/Unit/UserModelTest.php` | Helper role (`hasRole`, `hasAnyRole`), relasi tiket & assignments PM/Programmer. |
+| `tests/Unit/NotificationPreferenceModelTest.php` | Relasi user dan type-casting boolean preferensi notifikasi. |
+| `tests/Unit/ProgressLogModelTest.php` | Relasi log progres ke tiket & user, casting flag `is_internal`. |
+| `tests/Unit/AdminActivityLogModelTest.php` | Relasi audit log admin ke actor & target user, casting detail JSON. |
+| `tests/Unit/NotificationModelsTest.php` | Relasi dan integritas model `NotificationBatch`, `NotificationHold`, dan `NotificationLog`. |
