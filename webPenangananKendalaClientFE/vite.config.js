@@ -32,6 +32,7 @@ export default defineConfig(({ mode }) => {
       },
       workbox: {
         globPatterns: ['**/*.{js,css,html,svg,png,ico,woff2}'],
+        importScripts: ['sw-custom.js'],
         navigateFallback: '/index.html',
         navigateFallbackDenylist: [/^\/api\//, /^\/storage\//],
         runtimeCaching: [
@@ -74,7 +75,7 @@ export default defineConfig(({ mode }) => {
   },
   test: {
     globals: true,
-    environment: 'jsdom',
+    environment: 'happy-dom',
     setupFiles: './src/test/setup.js',
   },
 }
