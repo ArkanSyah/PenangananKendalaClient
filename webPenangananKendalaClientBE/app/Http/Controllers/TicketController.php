@@ -6,6 +6,8 @@ use App\Models\Ticket;
 use App\Models\TicketAssignment;
 use App\Models\ProgressLog;
 use App\Models\User;
+use App\Models\ArchivedTicket;
+use App\Models\AdminActivityLog;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
@@ -186,6 +188,86 @@ class TicketController extends Controller
         }
 
         return response()->json($ticket->load(['creator', 'assignments.programmer', 'assignments.pm', 'progressLogs.user']));
+    }
+
+    public function destroy(Request $request, $id)
+    {
+        $ticket = Ticket::where('ticket_id', $id)->first();
+
+        if (! $ticket) {
+            return response()->json(['message' => 'Tiket tidak ditemukan'], 404);
+        }
+
+        $reason = $request->input('reason');
+
+        ArchivedTicket::create([
+            'original_ticket_id' => $ticket->id,
+            'ticket_id' => $ticket->ticket_id,
+            'title' => $ticket->title,
+            'description' => $ticket->description,
+            'category' => $ticket->category,
+            'priority' => $ticket->priority,
+            'status' => $ticket->status,
+            'internal_notes' => $ticket->internal_notes,
+            'assigned_to_role' => $ticket->assigned_to_role,
+            'attachment_path' => $ticket->attachment_path,
+            'user_id' => $ticket->user_id,
+            'claimed_programmer_id' => $ticket->claimed_programmer_id,
+            'reporter_name' => $ticket->reporter_name,
+            'reporter_contact' => $ticket->reporter_contact,
+            'contact_method' => $ticket->contact_method,
+            'contact_method_notes' => $ticket->contact_method_notes,
+            'archived_by' => $request->user()->id,
+            'archived_at' => now(),
+            'archive_reason' => $reason,
+        ]);
+
+        AdminActivityLog::create([
+            'admin_id' => $request->user()->id,
+            'action' => 'delete_ticket',
+            'target_user_id' => $ticket->user_id,
+            'details' => [
+                'ticket_id' => $ticket->ticket_id,
+                'title' => $ticket->title,
+                'reason' => $reason,
+            ],
+        ]);
+
+        $ticket->delete();
+
+        return response()->json([
+            'message' => 'Tiket berhasil dihapus dan diarsipkan.',
+        ]);
+    }
+
+    public function restore(Request $request, $id)
+    {
+        $ticket = Ticket::withTrashed()->where('ticket_id', $id)->first();
+
+        if (! $ticket) {
+            return response()->json(['message' => 'Tiket tidak ditemukan'], 404);
+        }
+
+        if (! $ticket->trashed()) {
+            return response()->json(['message' => 'Tiket tidak dalam status terhapus.'], 422);
+        }
+
+        $ticket->restore();
+
+        AdminActivityLog::create([
+            'admin_id' => $request->user()->id,
+            'action' => 'restore_ticket',
+            'target_user_id' => $ticket->user_id,
+            'details' => [
+                'ticket_id' => $ticket->ticket_id,
+                'title' => $ticket->title,
+            ],
+        ]);
+
+        return response()->json([
+            'message' => 'Tiket berhasil dikembalikan.',
+            'ticket' => $ticket->fresh(),
+        ]);
     }
 
     /**
