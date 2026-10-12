@@ -17,6 +17,7 @@ return new class extends Migration
             $table->foreignId('pm_id')->constrained('users')->onDelete('cascade');
             $table->foreignId('programmer_id')->constrained('users')->onDelete('cascade');
             $table->decimal('estimated_hours', 8, 2);
+            $table->enum('estimated_unit', ['hours', 'days'])->default('hours');
             $table->timestamps();
         });
     }
