@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { NavLink, Outlet, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../AuthContext';
 import { NotificationBell } from './NotificationBell';
@@ -29,10 +29,53 @@ export const DashboardLayout = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [isHeaderVisible, setIsHeaderVisible] = useState(true);
+  const lastScrollY = useRef(0);
+  const mainRef = useRef(null);
+  const hamburgerButtonRef = useRef(null);
 
   useEffect(() => {
     setSidebarOpen(false);
   }, [location.pathname]);
+
+  // Headroom topbar scroll listener
+  useEffect(() => {
+    const main = mainRef.current;
+    if (!main) return;
+
+    const handleScroll = () => {
+      const currentY = main.scrollTop;
+      const diff = currentY - lastScrollY.current;
+
+      if (Math.abs(diff) < 10) return;
+
+      if (diff > 0 && currentY > 60) {
+        setIsHeaderVisible(false);
+      } else {
+        setIsHeaderVisible(true);
+      }
+
+      lastScrollY.current = currentY;
+    };
+
+    main.addEventListener('scroll', handleScroll, { passive: true });
+    return () => main.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  // Escape key close & focus return
+  useEffect(() => {
+    if (!sidebarOpen) return;
+
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') {
+        setSidebarOpen(false);
+        hamburgerButtonRef.current?.focus();
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [sidebarOpen]);
 
   const getRoleDisplay = (role) => {
     switch (role) {
@@ -127,6 +170,7 @@ export const DashboardLayout = () => {
 
       {/* Sidebar Navigation */}
       <aside
+        id="sidebar-navigation"
         className={`
           fixed inset-y-0 left-0 z-40 w-64 shrink-0 border-r border-slate-200 bg-white
           transform transition-transform duration-200 ease-in-out
@@ -144,7 +188,7 @@ export const DashboardLayout = () => {
           </div>
 
           {/* Navigation Links */}
-          <nav className="p-4 flex flex-col gap-1">
+          <nav aria-label="Primary navigation" className="p-4 flex flex-col gap-1">
             {menuItems.map((item) => {
               const IconComponent = item.icon;
               return (
@@ -207,12 +251,21 @@ export const DashboardLayout = () => {
 
       {/* Main Content Area & Topbar */}
       <div className="flex flex-1 flex-col overflow-hidden">
-        <header className="flex h-14 shrink-0 items-center justify-between border-b border-slate-200 bg-white px-4 md:px-6">
+        <header
+          className={`
+            flex h-14 shrink-0 items-center justify-between border-b border-slate-200 bg-white px-4 md:px-6
+            transition-transform duration-200 ease-in-out
+            ${isHeaderVisible ? 'translate-y-0' : '-translate-y-full'}
+          `}
+        >
           <button
+            ref={hamburgerButtonRef}
             type="button"
             onClick={() => setSidebarOpen(true)}
             className="rounded-md p-2 text-slate-600 hover:bg-slate-100 md:hidden cursor-pointer"
             aria-label="Buka menu navigasi"
+            aria-expanded={sidebarOpen}
+            aria-controls="sidebar-navigation"
           >
             <Menu className="h-5 w-5" />
           </button>
@@ -224,7 +277,7 @@ export const DashboardLayout = () => {
           </div>
         </header>
 
-        <main className="flex-1 overflow-y-auto bg-canvas p-4 md:p-8 flex flex-col items-stretch">
+        <main ref={mainRef} className="flex-1 overflow-y-auto bg-canvas p-4 md:p-8 flex flex-col items-stretch">
           <Outlet />
         </main>
       </div>
