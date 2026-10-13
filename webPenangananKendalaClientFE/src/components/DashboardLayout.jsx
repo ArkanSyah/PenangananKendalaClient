@@ -254,8 +254,8 @@ export const DashboardLayout = () => {
         <header
           className={`
             flex h-14 shrink-0 items-center justify-between border-b border-slate-200 bg-white px-4 md:px-6
-            transition-transform duration-200 ease-in-out
-            ${isHeaderVisible ? 'translate-y-0' : '-translate-y-full'}
+            transition-all duration-200 ease-in-out
+            ${isHeaderVisible ? 'mt-0' : '-mt-14'}
           `}
         >
           <button
