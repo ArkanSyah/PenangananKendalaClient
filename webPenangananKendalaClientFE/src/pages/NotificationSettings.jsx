@@ -4,6 +4,7 @@ import PreferenceToggle from '../components/Notification/PreferenceToggle';
 import DigestModeSelector from '../components/Notification/DigestModeSelector';
 import DigestPreviewModal from '../components/Notification/DigestPreviewModal';
 import QuietHoursPicker from '../components/Notification/QuietHoursPicker';
+import NotificationTabs from '../components/Notification/NotificationTabs';
 import { getPreferences, updatePreferences } from '../api/notification';
 
 export default function NotificationSettings() {
@@ -87,6 +88,8 @@ export default function NotificationSettings() {
       <p className="text-sm text-gray-500 mb-6">
         Atur bagaimana kamu menerima pemberitahuan perubahan status tiket.
       </p>
+
+      <NotificationTabs />
 
       <section className="bg-white border border-gray-200 rounded-lg p-5 mb-4">
         <h2 className="text-sm font-semibold text-gray-800 mb-1">
