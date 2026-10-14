@@ -259,12 +259,13 @@ class TicketRbacTest extends TestCase
         $this->assertCount(1, $pmTickets);
         $this->assertEquals($openTicket->ticket_id, $pmTickets[0]['ticket_id']);
 
-        // Owner Index -> should see escalated_to_pm but NOT open
+        // Owner Index -> should see ALL tickets (both open and escalated_to_pm)
         $ownerResponse = $this->actingAs($this->owner)->getJson('/api/tickets');
         $ownerResponse->assertStatus(200);
         $ownerTickets = $ownerResponse->json();
-        $this->assertCount(1, $ownerTickets);
-        $this->assertEquals($openTicket->ticket_id, $ownerTickets[0]['ticket_id']);
+        $this->assertCount(2, $ownerTickets);
+        $ownerTicketIds = collect($ownerTickets)->pluck('ticket_id')->all();
+        $this->assertContains($openTicket->ticket_id, $ownerTicketIds);
 
         // Service Desk Index -> should see BOTH (both open and escalated_to_pm)
         $sdResponse = $this->actingAs($this->serviceDesk)->getJson('/api/tickets');
