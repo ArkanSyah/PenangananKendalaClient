@@ -95,7 +95,7 @@ export const DashboardLayout = () => {
     const defaultMenu = [
       { name: 'Dashboard Overview', path: '/',        icon: LayoutDashboard, end: true },
       { name: 'All Tickets',        path: '/tickets', icon: ClipboardList,   end: true },
-      { name: 'Notifikasi',         path: '/settings/notifications/history', icon: BellRing },
+      { name: 'Notifikasi',         path: '/settings/notifications', icon: BellRing },
     ];
 
     switch (role) {
@@ -130,7 +130,7 @@ export const DashboardLayout = () => {
           { name: 'Dashboard Overview', path: '/',              icon: LayoutDashboard, end: true },
           { name: 'Buat Tiket',         path: '/client/create', icon: FilePlus },
           { name: 'Riwayat Tiket',      path: '/tickets',       icon: ClipboardList,   end: true },
-          { name: 'Notifikasi',         path: '/settings/notifications/history', icon: BellRing },
+          { name: 'Notifikasi',         path: '/settings/notifications', icon: BellRing },
         ];
       case 'admin':
         return [
@@ -139,7 +139,7 @@ export const DashboardLayout = () => {
           { name: 'Log Aktivitas',      path: '/admin/activity-logs', icon: ActivitySquare },
           { name: 'Board',              path: '/board',               icon: Kanban },
           { name: 'Arsip',              path: '/archive',             icon: Archive },
-          { name: 'Notifikasi',         path: '/settings/notifications/history', icon: BellRing },
+          { name: 'Notifikasi',         path: '/settings/notifications', icon: BellRing },
         ];
       default:
         return defaultMenu;
