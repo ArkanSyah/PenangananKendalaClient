@@ -2,6 +2,7 @@ import React from 'react';
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { useAuth } from '../AuthContext';
 import { NotificationBell } from './NotificationBell';
+import { canUserArchive } from '../utils/boardUtils';
 import {
   LayoutDashboard,
   ClipboardList,
@@ -19,6 +20,7 @@ import {
   ActivitySquare,
   Kanban,
   BellRing,
+  Archive,
 } from 'lucide-react';
 
 export const DashboardLayout = () => {
@@ -69,6 +71,7 @@ export const DashboardLayout = () => {
         return [
           ...defaultMenu,
           { name: 'Board',              path: '/board',         icon: Kanban },
+          { name: 'Arsip',              path: '/archive',       icon: Archive },
           { name: 'Laporan Issues (PM)', path: '/owner/issues', icon: Crown },
           { name: 'System Reports',       path: '/reports',      icon: BarChart3 },
         ];
@@ -85,6 +88,7 @@ export const DashboardLayout = () => {
           { name: 'Manajemen Pengguna', path: '/admin/users',        icon: Users },
           { name: 'Log Aktivitas',      path: '/admin/activity-logs', icon: ActivitySquare },
           { name: 'Board',              path: '/board',               icon: Kanban },
+          { name: 'Arsip',              path: '/archive',             icon: Archive },
           { name: 'Notifikasi',         path: '/settings/notifications/history', icon: BellRing },
         ];
       default:
@@ -92,7 +96,10 @@ export const DashboardLayout = () => {
     }
   };
 
-  const menuItems = getNavigationMenu(user?.role);
+  const baseMenuItems = getNavigationMenu(user?.role);
+  const menuItems = canUserArchive(user) && !baseMenuItems.some((item) => item.path === '/archive')
+    ? [...baseMenuItems, { name: 'Arsip', path: '/archive', icon: Archive }]
+    : baseMenuItems;
 
   const handleLogout = async () => {
     await logout();

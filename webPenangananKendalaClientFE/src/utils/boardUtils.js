@@ -36,10 +36,19 @@ export function getPriorityConfig(priority) {
   return PRIORITY_CONFIG[priority] || PRIORITY_CONFIG.belum_ditentukan;
 }
 
+export const EXECUTIVE_ROLES = ['owner', 'admin'];
+
 export function canUserDrag(user) {
   if (!user || !user.role) return false;
   return DRAG_ALLOWED_ROLES.includes(user.role);
 }
+
+export function canUserArchive(user) {
+  if (!user || !user.role) return false;
+  return EXECUTIVE_ROLES.includes(user.role);
+}
+
+export const canUserDelete = canUserArchive;
 
 export function loadBoardLayout() {
   try {

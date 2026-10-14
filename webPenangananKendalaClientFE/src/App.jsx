@@ -29,6 +29,7 @@ import { ClientDashboard } from './components/Client/ClientDashboard';
 import { CreateTicketForm } from './components/Client/CreateTicketForm';
 import { ClientTicketDetail } from './components/Client/ClientTicketDetail';
 import BoardPage from './pages/BoardPage';
+import ArchivePage from './pages/ArchivePage';
 import NotificationSettings from './pages/NotificationSettings';
 import NotificationHistory from './pages/NotificationHistory';
 import PWAPrompt from './components/PWAPrompt';
@@ -125,6 +126,16 @@ function App() {
               element={
                 <ProtectedRoute allowedRoles={['owner', 'admin']}>
                   <BoardPage />
+                </ProtectedRoute>
+              }
+            />
+
+            {/* Archive Route */}
+            <Route
+              path="archive"
+              element={
+                <ProtectedRoute allowedRoles={['owner', 'admin']}>
+                  <ArchivePage />
                 </ProtectedRoute>
               }
             />

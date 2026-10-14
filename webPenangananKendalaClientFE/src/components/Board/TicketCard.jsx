@@ -1,9 +1,9 @@
 import { useDraggable } from '@dnd-kit/core';
-import { User, Building2, Clock } from 'lucide-react';
+import { User, Building2, Clock, Trash2 } from 'lucide-react';
 import { PRIORITY_CONFIG } from '../../constants/statusMapping';
-import { formatRelativeTime } from '../../utils/boardUtils';
+import { formatRelativeTime, canUserDelete } from '../../utils/boardUtils';
 
-export default function TicketCard({ ticket, onClick }) {
+export default function TicketCard({ ticket, onClick, onDelete, user }) {
   const { attributes, listeners, setNodeRef, transform, isDragging } =
     useDraggable({ id: ticket.id });
 
@@ -25,13 +25,27 @@ export default function TicketCard({ ticket, onClick }) {
       {...listeners}
       onClick={() => onClick(ticket)}
       className={`
-        bg-white rounded-lg shadow-sm cursor-grab active:cursor-grabbing
+        relative bg-white rounded-lg shadow-sm cursor-grab active:cursor-grabbing
         ${priority.border}
         ${isDragging ? 'opacity-50 shadow-lg' : 'hover:shadow-md'}
         transition-shadow p-3 select-none
       `}
     >
-      <div className="flex items-center justify-between mb-2">
+      {canUserDelete(user) && onDelete && (
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            onDelete(ticket);
+          }}
+          className="absolute right-2 top-2 rounded p-1 text-slate-400 hover:bg-red-50 hover:text-red-600"
+          title="Hapus tiket"
+        >
+          <Trash2 className="h-4 w-4" />
+        </button>
+      )}
+
+      <div className="flex items-center justify-between mb-2 pr-6">
         <span className="text-xs font-mono text-gray-500">
           {ticket.ticket_id}
         </span>

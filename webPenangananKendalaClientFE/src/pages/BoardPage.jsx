@@ -1,4 +1,6 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Archive } from 'lucide-react';
 import {
   DndContext,
   closestCenter,
@@ -9,6 +11,7 @@ import {
 import axios from 'axios';
 import BoardColumn from '../components/Board/BoardColumn';
 import TicketDetailModal from '../components/Board/TicketDetailModal';
+import DeleteTicketModal from '../components/Board/DeleteTicketModal';
 import Toast from '../components/Board/Toast';
 import { STATUS_ORDER } from '../constants/statusMapping';
 import {
@@ -17,14 +20,20 @@ import {
   saveBoardLayout,
   applyLayout,
   canUserDrag,
+  canUserArchive,
+  canUserDelete,
 } from '../utils/boardUtils';
+import { deleteTicket } from '../api/tickets';
 import { useAuth } from '../AuthContext';
 
 export default function BoardPage() {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [tickets, setTickets] = useState([]);
   const [grouped, setGrouped] = useState({});
   const [selectedTicket, setSelectedTicket] = useState(null);
+  const [deleteTarget, setDeleteTarget] = useState(null);
+  const [isDeleting, setIsDeleting] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [toast, setToast] = useState(null);
@@ -37,30 +46,43 @@ export default function BoardPage() {
     })
   );
 
-  useEffect(() => {
-    let cancelled = false;
-    async function fetchTickets() {
-      try {
-        setLoading(true);
-        const res = await axios.get('/tickets');
-        const data = Array.isArray(res.data) ? res.data : res.data.data || [];
-        if (cancelled) return;
-        setTickets(data);
-        const g = groupTicketsByStatus(data);
-        const layout = loadBoardLayout();
-        setGrouped(applyLayout(g, layout));
-      } catch (err) {
-        if (cancelled) return;
-        setError(err.message || 'Gagal memuat tiket');
-      } finally {
-        if (!cancelled) setLoading(false);
-      }
+  const fetchTickets = useCallback(async () => {
+    try {
+      setLoading(true);
+      const res = await axios.get('/tickets');
+      const data = Array.isArray(res.data) ? res.data : res.data.data || [];
+      setTickets(data);
+      const g = groupTicketsByStatus(data);
+      const layout = loadBoardLayout();
+      setGrouped(applyLayout(g, layout));
+    } catch (err) {
+      setError(err.message || 'Gagal memuat tiket');
+    } finally {
+      setLoading(false);
     }
-    fetchTickets();
-    return () => {
-      cancelled = true;
-    };
   }, []);
+
+  useEffect(() => {
+    fetchTickets();
+  }, [fetchTickets]);
+
+  const handleDeleteConfirm = async (reason) => {
+    if (!deleteTarget) return;
+    setIsDeleting(true);
+    try {
+      await deleteTicket(deleteTarget.ticket_id, reason);
+      setDeleteTarget(null);
+      await fetchTickets();
+      setToast({ message: 'Tiket berhasil dipindahkan ke arsip', type: 'success' });
+    } catch (err) {
+      setToast({
+        message: err.response?.data?.message || 'Gagal menghapus tiket',
+        type: 'error',
+      });
+    } finally {
+      setIsDeleting(false);
+    }
+  };
 
   async function handleDragEnd(event) {
     const { active, over } = event;
@@ -118,9 +140,22 @@ export default function BoardPage() {
 
   return (
     <div className="p-6">
-      <h1 className="text-2xl font-bold text-gray-800 mb-4">
-        Board Monitoring
-      </h1>
+      <div className="flex items-center justify-between mb-4">
+        <h1 className="text-2xl font-bold text-gray-800">
+          Board Monitoring
+        </h1>
+        {canUserArchive(user) && (
+          <button
+            type="button"
+            onClick={() => navigate('/archive')}
+            className="flex items-center gap-2 rounded border border-slate-300 px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 cursor-pointer"
+            title="Lihat arsip tiket"
+          >
+            <Archive className="h-4 w-4" />
+            Arsip
+          </button>
+        )}
+      </div>
 
       {!canDrag && (
         <div className="mb-4 px-4 py-2 bg-[#FBC02D]/10 border border-[#FBC02D]/40 rounded-lg text-sm text-[#8a6800]">
@@ -141,7 +176,8 @@ export default function BoardPage() {
                 status={status}
                 tickets={grouped[status] || []}
                 onCardClick={setSelectedTicket}
-                canDrag={canDrag}
+                onDelete={canUserDelete(user) ? setDeleteTarget : null}
+                user={user}
               />
             ))}
           </div>
@@ -151,6 +187,13 @@ export default function BoardPage() {
       <TicketDetailModal
         ticket={selectedTicket}
         onClose={() => setSelectedTicket(null)}
+      />
+
+      <DeleteTicketModal
+        ticket={deleteTarget}
+        onConfirm={handleDeleteConfirm}
+        onCancel={() => setDeleteTarget(null)}
+        isDeleting={isDeleting}
       />
 
       {toast && (
