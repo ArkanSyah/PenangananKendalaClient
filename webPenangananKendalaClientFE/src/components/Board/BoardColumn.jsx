@@ -2,7 +2,7 @@ import { useDroppable } from '@dnd-kit/core';
 import TicketCard from './TicketCard';
 import { STATUS_LABEL } from '../../constants/statusMapping';
 
-export default function BoardColumn({ status, tickets, onCardClick }) {
+export default function BoardColumn({ status, tickets, onCardClick, onDelete, user }) {
   const { setNodeRef, isOver } = useDroppable({ id: status });
 
   return (
@@ -31,7 +31,13 @@ export default function BoardColumn({ status, tickets, onCardClick }) {
           </div>
         ) : (
           tickets.map((ticket) => (
-            <TicketCard key={ticket.id} ticket={ticket} onClick={onCardClick} />
+            <TicketCard
+              key={ticket.id}
+              ticket={ticket}
+              onClick={onCardClick}
+              onDelete={onDelete}
+              user={user}
+            />
           ))
         )}
       </div>

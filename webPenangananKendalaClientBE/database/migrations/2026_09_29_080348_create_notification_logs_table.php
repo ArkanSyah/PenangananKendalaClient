@@ -19,7 +19,10 @@ return new class extends Migration
             $table->string('reason')->nullable();
             $table->json('channel_attempts')->nullable();
             $table->timestamp('sent_at')->nullable();
+            $table->timestamp('read_at')->nullable();
             $table->timestamps();
+
+            $table->index(['recipient_user_id', 'channel', 'read_at'], 'notif_logs_recipient_channel_read_idx');
         });
     }
 

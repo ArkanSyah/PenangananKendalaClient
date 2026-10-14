@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Link } from 'react-router-dom';
+import NotificationTabs from '../components/Notification/NotificationTabs';
 import { Bell, Search, Loader2, Check } from 'lucide-react';
 import axios from 'axios';
 
@@ -88,6 +88,8 @@ export default function NotificationHistory() {
       <p className="text-sm text-gray-500 mb-6">
         Semua notifikasi in-app Anda.
       </p>
+
+      <NotificationTabs />
 
       <div className="flex flex-wrap items-center gap-3 mb-4">
         <div className="flex gap-1 bg-gray-100 rounded-lg p-1">
@@ -208,15 +210,6 @@ export default function NotificationHistory() {
           </div>
         </div>
       )}
-
-      <div className="mt-6">
-        <Link
-          to="/settings/notifications"
-          className="text-sm text-[#005662] hover:underline"
-        >
-          ← Kembali ke Pengaturan
-        </Link>
-      </div>
     </div>
   );
 }

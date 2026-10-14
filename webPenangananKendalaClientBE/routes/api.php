@@ -8,6 +8,7 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\BoardController;
 use App\Http\Controllers\NotificationPreferenceController;
 use App\Http\Controllers\PushSubscriptionController;
+use App\Http\Controllers\ArchivedTicketController;
 use App\Models\User;
 
 // Public Auth Routes
@@ -75,6 +76,15 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/tickets/walk-in', [TicketController::class, 'storeWalkIn'])->middleware('role:service_desk');
 
     Route::get('/tickets/{ticket}', [TicketController::class, 'show']);
+
+    Route::delete('/tickets/{ticket}', [TicketController::class, 'destroy'])
+        ->middleware('role:owner,admin');
+
+    Route::post('/tickets/{ticket}/restore', [TicketController::class, 'restore'])
+        ->middleware('role:owner,admin');
+
+    Route::get('/archived-tickets', [ArchivedTicketController::class, 'index'])
+        ->middleware('role:owner,admin');
     
     // Client tickets routes (Client Only)
     Route::middleware('role:client')->group(function () {
@@ -100,6 +110,10 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Update Ticket Priority (PM Only, any status except closed/rejected)
     Route::post('/tickets/{ticket}/priority', [TicketController::class, 'updatePriority'])->middleware('role:project_manager');
+
+    // Update Ticket Title (Owner & Admin Only)
+    Route::patch('/tickets/{ticket}/title', [TicketController::class, 'updateTitle'])
+        ->middleware('role:owner,admin');
 
     // Update Ticket Status
     Route::post('/tickets/{ticket}/status', [TicketController::class, 'updateStatus']);
