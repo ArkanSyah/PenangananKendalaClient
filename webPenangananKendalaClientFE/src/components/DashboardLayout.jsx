@@ -1,5 +1,5 @@
-import React from 'react';
-import { NavLink, Outlet, useNavigate } from 'react-router-dom';
+import React, { useState, useEffect, useRef } from 'react';
+import { NavLink, Outlet, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../AuthContext';
 import { NotificationBell } from './NotificationBell';
 import { canUserArchive } from '../utils/boardUtils';
@@ -21,11 +21,61 @@ import {
   Kanban,
   BellRing,
   Archive,
+  Menu,
 } from 'lucide-react';
 
 export const DashboardLayout = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [isHeaderVisible, setIsHeaderVisible] = useState(true);
+  const lastScrollY = useRef(0);
+  const mainRef = useRef(null);
+  const hamburgerButtonRef = useRef(null);
+
+  useEffect(() => {
+    setSidebarOpen(false);
+  }, [location.pathname]);
+
+  // Headroom topbar scroll listener
+  useEffect(() => {
+    const main = mainRef.current;
+    if (!main) return;
+
+    const handleScroll = () => {
+      const currentY = main.scrollTop;
+      const diff = currentY - lastScrollY.current;
+
+      if (Math.abs(diff) < 10) return;
+
+      if (diff > 0 && currentY > 60) {
+        setIsHeaderVisible(false);
+      } else {
+        setIsHeaderVisible(true);
+      }
+
+      lastScrollY.current = currentY;
+    };
+
+    main.addEventListener('scroll', handleScroll, { passive: true });
+    return () => main.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  // Escape key close & focus return
+  useEffect(() => {
+    if (!sidebarOpen) return;
+
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') {
+        setSidebarOpen(false);
+        hamburgerButtonRef.current?.focus();
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [sidebarOpen]);
 
   const getRoleDisplay = (role) => {
     switch (role) {
@@ -109,8 +159,26 @@ export const DashboardLayout = () => {
   return (
     <div className="flex h-screen w-screen overflow-hidden bg-canvas font-sans text-slate-800">
 
+      {/* Mobile Drawer Backdrop */}
+      {sidebarOpen && (
+        <div
+          className="fixed inset-0 z-30 bg-black/50 backdrop-blur-sm md:hidden"
+          onClick={() => setSidebarOpen(false)}
+          aria-hidden="true"
+        />
+      )}
+
       {/* Sidebar Navigation */}
-      <aside className="w-64 bg-white border-r border-slate-200 flex flex-col justify-between shrink-0 shadow-sm text-left">
+      <aside
+        id="sidebar-navigation"
+        className={`
+          fixed inset-y-0 left-0 z-40 w-64 shrink-0 border-r border-slate-200 bg-white
+          transform transition-transform duration-200 ease-in-out
+          ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}
+          md:relative md:translate-x-0 md:z-auto
+          flex flex-col justify-between shadow-sm text-left
+        `}
+      >
         <div>
           {/* Sidebar Header */}
           <div className="px-5 py-4 border-b border-slate-100 flex items-center gap-2">
@@ -120,7 +188,7 @@ export const DashboardLayout = () => {
           </div>
 
           {/* Navigation Links */}
-          <nav className="p-4 flex flex-col gap-1">
+          <nav aria-label="Primary navigation" className="p-4 flex flex-col gap-1">
             {menuItems.map((item) => {
               const IconComponent = item.icon;
               return (
@@ -181,14 +249,37 @@ export const DashboardLayout = () => {
         </div>
       </aside>
 
-      {/* Main Content Area */}
-      <main className="flex-1 h-screen overflow-y-auto bg-canvas p-8 flex flex-col items-stretch">
-        <Outlet />
-      </main>
+      {/* Main Content Area & Topbar */}
+      <div className="flex flex-1 flex-col overflow-hidden">
+        <header
+          className={`
+            flex h-14 shrink-0 items-center justify-between border-b border-slate-200 bg-white px-4 md:px-6
+            transition-all duration-200 ease-in-out
+            ${isHeaderVisible ? 'mt-0' : '-mt-14'}
+          `}
+        >
+          <button
+            ref={hamburgerButtonRef}
+            type="button"
+            onClick={() => setSidebarOpen(true)}
+            className="rounded-md p-2 text-slate-600 hover:bg-slate-100 md:hidden cursor-pointer"
+            aria-label="Buka menu navigasi"
+            aria-expanded={sidebarOpen}
+            aria-controls="sidebar-navigation"
+          >
+            <Menu className="h-5 w-5" />
+          </button>
 
-      {/* ── Notification Bell — Fixed top-right ── */}
-      <div className="fixed top-5 right-8 z-50">
-        <NotificationBell />
+          <div className="hidden md:block" />
+
+          <div className="flex items-center gap-2">
+            <NotificationBell />
+          </div>
+        </header>
+
+        <main ref={mainRef} className="flex-1 overflow-y-auto bg-canvas p-4 md:p-8 flex flex-col items-stretch">
+          <Outlet />
+        </main>
       </div>
     </div>
   );
