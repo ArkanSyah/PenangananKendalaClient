@@ -120,7 +120,7 @@ export const DashboardOverview = () => {
       {/* Action Cards Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
 
-        {user.role === 'service_desk' && (
+        {user?.role === 'service_desk' && (
           <div className="bg-white border border-slate-200 rounded-lg p-6 flex flex-col justify-between h-40 hover:border-primary transition-all duration-150 shadow-sm">
             <div>
               <h4 className="text-sm font-bold text-slate-900 mb-1">Eskalasi Tiket Baru</h4>
@@ -132,7 +132,7 @@ export const DashboardOverview = () => {
           </div>
         )}
 
-        {user.role === 'project_manager' && (
+        {user?.role === 'project_manager' && (
           <div className="bg-white border border-slate-200 rounded-lg p-6 flex flex-col justify-between h-40 hover:border-primary transition-all duration-150 shadow-sm">
             <div>
               <h4 className="text-sm font-bold text-slate-900 mb-1">Resource Allocation</h4>
@@ -144,7 +144,7 @@ export const DashboardOverview = () => {
           </div>
         )}
 
-        {user.role === 'programmer' && (
+        {user?.role === 'programmer' && (
           <div className="bg-white border border-slate-200 rounded-lg p-6 flex flex-col justify-between h-40 hover:border-primary transition-all duration-150 shadow-sm">
             <div>
               <h4 className="text-sm font-bold text-slate-900 mb-1">My Sprint Tasks</h4>
@@ -156,7 +156,7 @@ export const DashboardOverview = () => {
           </div>
         )}
 
-        {user.role === 'owner' && (
+        {user?.role === 'owner' && (
           <div className="bg-white border border-slate-200 rounded-lg p-6 flex flex-col justify-between h-40 hover:border-primary transition-all duration-150 shadow-sm">
             <div>
               <h4 className="text-sm font-bold text-slate-900 mb-1">Analytical Audit Reports</h4>
