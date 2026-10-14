@@ -84,5 +84,8 @@ class DatabaseSeeder extends Seeder
                 'is_active' => true,
             ]
         );
+
+        // Seed Sample Tickets & Progress Logs
+        $this->call(TicketSeeder::class);
     }
 }
