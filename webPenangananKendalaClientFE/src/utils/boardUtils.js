@@ -50,6 +50,11 @@ export function canUserArchive(user) {
 
 export const canUserDelete = canUserArchive;
 
+export function canUserEditTitle(user) {
+  if (!user || !user.role) return false;
+  return EXECUTIVE_ROLES.includes(user.role);
+}
+
 export function loadBoardLayout() {
   try {
     const raw = sessionStorage.getItem('board-layout');

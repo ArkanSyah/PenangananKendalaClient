@@ -1236,4 +1236,43 @@ class TicketController extends Controller
             ]);
         });
     }
+
+    public function updateTitle(Request $request, $id)
+    {
+        $ticket = Ticket::where('ticket_id', $id)->first();
+
+        if (! $ticket) {
+            return response()->json(['message' => 'Tiket tidak ditemukan'], 404);
+        }
+
+        $request->validate([
+            'title' => 'required|string|max:255',
+        ]);
+
+        $oldTitle = $ticket->title;
+        $newTitle = trim($request->title);
+
+        if ($oldTitle === $newTitle) {
+            return response()->json([
+                'message' => 'Judul tidak berubah.',
+                'ticket' => $ticket->load(['creator', 'assignments.programmer', 'assignments.pm', 'progressLogs.user']),
+            ]);
+        }
+
+        $ticket->update(['title' => $newTitle]);
+
+        ProgressLog::create([
+            'ticket_id' => $ticket->id,
+            'user_id' => $request->user()->id,
+            'previous_status' => $ticket->status,
+            'new_status' => $ticket->status,
+            'notes' => '[TITLE_EDIT] Judul diubah dari "' . $oldTitle . '" menjadi "' . $newTitle . '"',
+            'is_internal' => true,
+        ]);
+
+        return response()->json([
+            'message' => 'Judul tiket berhasil diubah.',
+            'ticket' => $ticket->load(['creator', 'assignments.programmer', 'assignments.pm', 'progressLogs.user']),
+        ]);
+    }
 }

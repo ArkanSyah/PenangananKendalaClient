@@ -111,6 +111,10 @@ Route::middleware('auth:sanctum')->group(function () {
     // Update Ticket Priority (PM Only, any status except closed/rejected)
     Route::post('/tickets/{ticket}/priority', [TicketController::class, 'updatePriority'])->middleware('role:project_manager');
 
+    // Update Ticket Title (Owner & Admin Only)
+    Route::patch('/tickets/{ticket}/title', [TicketController::class, 'updateTitle'])
+        ->middleware('role:owner,admin');
+
     // Update Ticket Status
     Route::post('/tickets/{ticket}/status', [TicketController::class, 'updateStatus']);
 

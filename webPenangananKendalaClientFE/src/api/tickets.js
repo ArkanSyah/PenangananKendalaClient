@@ -16,3 +16,8 @@ export async function fetchArchivedTickets(params = {}) {
   const response = await axios.get('/archived-tickets', { params });
   return response.data;
 }
+
+export async function updateTicketTitle(ticketId, title) {
+  const response = await axios.patch(`/tickets/${ticketId}/title`, { title });
+  return response.data;
+}
