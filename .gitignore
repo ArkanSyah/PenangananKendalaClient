@@ -34,8 +34,6 @@ Thumbs.db
 *.swp
 *.swo
 
-# AI Agent (personal — tidak untuk commit)
-.agents/
-.agent/
+# AI Agent
 AGENTS.md
 CLAUDE.md
