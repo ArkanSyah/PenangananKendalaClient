@@ -6,17 +6,17 @@
     },
     "servers": [
         {
-            "url": "http:\/\/127.0.0.1:8000\/api"
+            "url": "http://localhost:8000/api"
         }
     ],
     "paths": {
-        "\/health": {
+        "/health": {
             "get": {
                 "responses": {
                     "200": {
                         "description": "",
                         "content": {
-                            "application\/json": {
+                            "application/json": {
                                 "schema": {
                                     "type": "object",
                                     "properties": {
@@ -72,29 +72,46 @@
                 }
             }
         },
-        "\/programmers": {
+        "/programmers": {
             "get": {
                 "responses": {
                     "200": {
                         "description": "",
                         "content": {
-                            "application\/json": {
+                            "application/json": {
                                 "schema": {
                                     "type": "array",
                                     "items": {
-                                        "$ref": "#\/components\/schemas\/User"
+                                        "$ref": "#/components/schemas/User"
                                     }
                                 }
                             }
                         }
                     },
                     "401": {
-                        "$ref": "#\/components\/responses\/AuthenticationException"
+                        "$ref": "#/components/responses/AuthenticationException"
                     }
                 }
             }
         },
-        "\/admin\/users": {
+        "/documentation": {
+            "get": {
+                "operationId": "swagger.documentation",
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/admin/users": {
             "get": {
                 "operationId": "admin.getUsers",
                 "tags": [
@@ -104,18 +121,18 @@
                     "200": {
                         "description": "",
                         "content": {
-                            "application\/json": {
+                            "application/json": {
                                 "schema": {
                                     "type": "array",
                                     "items": {
-                                        "$ref": "#\/components\/schemas\/User"
+                                        "$ref": "#/components/schemas/User"
                                     }
                                 }
                             }
                         }
                     },
                     "401": {
-                        "$ref": "#\/components\/responses\/AuthenticationException"
+                        "$ref": "#/components/responses/AuthenticationException"
                     }
                 }
             },
@@ -127,7 +144,7 @@
                 "requestBody": {
                     "required": true,
                     "content": {
-                        "application\/json": {
+                        "application/json": {
                             "schema": {
                                 "type": "object",
                                 "properties": {
@@ -168,7 +185,7 @@
                     "201": {
                         "description": "",
                         "content": {
-                            "application\/json": {
+                            "application/json": {
                                 "schema": {
                                     "type": "object",
                                     "properties": {
@@ -177,7 +194,7 @@
                                             "const": "Akun pengguna berhasil dibuat."
                                         },
                                         "user": {
-                                            "$ref": "#\/components\/schemas\/User"
+                                            "$ref": "#/components/schemas/User"
                                         }
                                     },
                                     "required": [
@@ -189,15 +206,15 @@
                         }
                     },
                     "422": {
-                        "$ref": "#\/components\/responses\/ValidationException"
+                        "$ref": "#/components/responses/ValidationException"
                     },
                     "401": {
-                        "$ref": "#\/components\/responses\/AuthenticationException"
+                        "$ref": "#/components/responses/AuthenticationException"
                     }
                 }
             }
         },
-        "\/admin\/users\/{user}": {
+        "/admin/users/{user}": {
             "put": {
                 "operationId": "admin.updateUser",
                 "tags": [
@@ -217,7 +234,7 @@
                 "requestBody": {
                     "required": true,
                     "content": {
-                        "application\/json": {
+                        "application/json": {
                             "schema": {
                                 "type": "object",
                                 "properties": {
@@ -253,7 +270,7 @@
                     "200": {
                         "description": "",
                         "content": {
-                            "application\/json": {
+                            "application/json": {
                                 "schema": {
                                     "type": "object",
                                     "properties": {
@@ -262,7 +279,7 @@
                                             "const": "Data pengguna berhasil diperbarui."
                                         },
                                         "user": {
-                                            "$ref": "#\/components\/schemas\/User"
+                                            "$ref": "#/components/schemas/User"
                                         }
                                     },
                                     "required": [
@@ -274,18 +291,18 @@
                         }
                     },
                     "422": {
-                        "$ref": "#\/components\/responses\/ValidationException"
+                        "$ref": "#/components/responses/ValidationException"
                     },
                     "404": {
-                        "$ref": "#\/components\/responses\/ModelNotFoundException"
+                        "$ref": "#/components/responses/ModelNotFoundException"
                     },
                     "401": {
-                        "$ref": "#\/components\/responses\/AuthenticationException"
+                        "$ref": "#/components/responses/AuthenticationException"
                     }
                 }
             }
         },
-        "\/admin\/users\/{user}\/toggle-active": {
+        "/admin/users/{user}/toggle-active": {
             "patch": {
                 "operationId": "admin.toggleActive",
                 "tags": [
@@ -306,7 +323,7 @@
                     "200": {
                         "description": "",
                         "content": {
-                            "application\/json": {
+                            "application/json": {
                                 "schema": {
                                     "type": "object",
                                     "properties": {
@@ -332,7 +349,7 @@
                     "403": {
                         "description": "",
                         "content": {
-                            "application\/json": {
+                            "application/json": {
                                 "schema": {
                                     "type": "object",
                                     "properties": {
@@ -349,15 +366,15 @@
                         }
                     },
                     "404": {
-                        "$ref": "#\/components\/responses\/ModelNotFoundException"
+                        "$ref": "#/components/responses/ModelNotFoundException"
                     },
                     "401": {
-                        "$ref": "#\/components\/responses\/AuthenticationException"
+                        "$ref": "#/components/responses/AuthenticationException"
                     }
                 }
             }
         },
-        "\/admin\/users\/{user}\/reset-password": {
+        "/admin/users/{user}/reset-password": {
             "post": {
                 "operationId": "admin.resetPassword",
                 "tags": [
@@ -377,7 +394,7 @@
                 "requestBody": {
                     "required": true,
                     "content": {
-                        "application\/json": {
+                        "application/json": {
                             "schema": {
                                 "type": "object",
                                 "properties": {
@@ -397,7 +414,7 @@
                     "200": {
                         "description": "",
                         "content": {
-                            "application\/json": {
+                            "application/json": {
                                 "schema": {
                                     "type": "object",
                                     "properties": {
@@ -413,18 +430,18 @@
                         }
                     },
                     "422": {
-                        "$ref": "#\/components\/responses\/ValidationException"
+                        "$ref": "#/components/responses/ValidationException"
                     },
                     "404": {
-                        "$ref": "#\/components\/responses\/ModelNotFoundException"
+                        "$ref": "#/components/responses/ModelNotFoundException"
                     },
                     "401": {
-                        "$ref": "#\/components\/responses\/AuthenticationException"
+                        "$ref": "#/components/responses/AuthenticationException"
                     }
                 }
             }
         },
-        "\/admin\/stats": {
+        "/admin/stats": {
             "get": {
                 "operationId": "admin.getStats",
                 "tags": [
@@ -434,7 +451,7 @@
                     "200": {
                         "description": "",
                         "content": {
-                            "application\/json": {
+                            "application/json": {
                                 "schema": {
                                     "type": "object",
                                     "properties": {
@@ -452,7 +469,7 @@
                                                 "by_role": {
                                                     "type": "array",
                                                     "items": {
-                                                        "$ref": "#\/components\/schemas\/User"
+                                                        "$ref": "#/components/schemas/User"
                                                     }
                                                 }
                                             },
@@ -480,12 +497,12 @@
                         }
                     },
                     "401": {
-                        "$ref": "#\/components\/responses\/AuthenticationException"
+                        "$ref": "#/components/responses/AuthenticationException"
                     }
                 }
             }
         },
-        "\/admin\/activity-logs": {
+        "/admin/activity-logs": {
             "get": {
                 "operationId": "admin.getActivityLogs",
                 "tags": [
@@ -495,23 +512,23 @@
                     "200": {
                         "description": "",
                         "content": {
-                            "application\/json": {
+                            "application/json": {
                                 "schema": {
                                     "type": "array",
                                     "items": {
-                                        "$ref": "#\/components\/schemas\/AdminActivityLog"
+                                        "$ref": "#/components/schemas/AdminActivityLog"
                                     }
                                 }
                             }
                         }
                     },
                     "401": {
-                        "$ref": "#\/components\/responses\/AuthenticationException"
+                        "$ref": "#/components/responses/AuthenticationException"
                     }
                 }
             }
         },
-        "\/admin\/quota": {
+        "/admin/quota": {
             "get": {
                 "operationId": "adminQuota.show",
                 "tags": [
@@ -521,7 +538,7 @@
                     "200": {
                         "description": "",
                         "content": {
-                            "application\/json": {
+                            "application/json": {
                                 "schema": {
                                     "type": "object",
                                     "properties": {
@@ -577,12 +594,157 @@
                         }
                     },
                     "401": {
-                        "$ref": "#\/components\/responses\/AuthenticationException"
+                        "$ref": "#/components/responses/AuthenticationException"
                     }
                 }
             }
         },
-        "\/login": {
+        "/archived-tickets": {
+            "get": {
+                "operationId": "archivedTicket.index",
+                "tags": [
+                    "ArchivedTicket"
+                ],
+                "parameters": [
+                    {
+                        "name": "q",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "current_page": {
+                                            "type": "integer",
+                                            "minimum": 1
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/ArchivedTicket"
+                                            }
+                                        },
+                                        "first_page_url": {
+                                            "type": [
+                                                "string",
+                                                "null"
+                                            ]
+                                        },
+                                        "from": {
+                                            "type": [
+                                                "integer",
+                                                "null"
+                                            ],
+                                            "minimum": 1
+                                        },
+                                        "last_page_url": {
+                                            "type": [
+                                                "string",
+                                                "null"
+                                            ]
+                                        },
+                                        "last_page": {
+                                            "type": "integer",
+                                            "minimum": 1
+                                        },
+                                        "links": {
+                                            "type": "array",
+                                            "description": "Generated paginator links.",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "url": {
+                                                        "type": [
+                                                            "string",
+                                                            "null"
+                                                        ]
+                                                    },
+                                                    "label": {
+                                                        "type": "string"
+                                                    },
+                                                    "active": {
+                                                        "type": "boolean"
+                                                    }
+                                                },
+                                                "required": [
+                                                    "url",
+                                                    "label",
+                                                    "active"
+                                                ]
+                                            }
+                                        },
+                                        "next_page_url": {
+                                            "type": [
+                                                "string",
+                                                "null"
+                                            ]
+                                        },
+                                        "path": {
+                                            "type": [
+                                                "string",
+                                                "null"
+                                            ],
+                                            "description": "Base path for paginator generated URLs."
+                                        },
+                                        "per_page": {
+                                            "type": "integer",
+                                            "description": "Number of items shown per page.",
+                                            "minimum": 0
+                                        },
+                                        "prev_page_url": {
+                                            "type": [
+                                                "string",
+                                                "null"
+                                            ]
+                                        },
+                                        "to": {
+                                            "type": [
+                                                "integer",
+                                                "null"
+                                            ],
+                                            "description": "Number of the last item in the slice.",
+                                            "minimum": 1
+                                        },
+                                        "total": {
+                                            "type": "integer",
+                                            "description": "Total number of items being paginated.",
+                                            "minimum": 0
+                                        }
+                                    },
+                                    "required": [
+                                        "current_page",
+                                        "data",
+                                        "first_page_url",
+                                        "from",
+                                        "last_page_url",
+                                        "last_page",
+                                        "links",
+                                        "next_page_url",
+                                        "path",
+                                        "per_page",
+                                        "prev_page_url",
+                                        "to",
+                                        "total"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
+        "/login": {
             "post": {
                 "operationId": "auth.login",
                 "tags": [
@@ -591,7 +753,7 @@
                 "requestBody": {
                     "required": true,
                     "content": {
-                        "application\/json": {
+                        "application/json": {
                             "schema": {
                                 "type": "object",
                                 "properties": {
@@ -615,7 +777,7 @@
                     "200": {
                         "description": "",
                         "content": {
-                            "application\/json": {
+                            "application/json": {
                                 "schema": {
                                     "type": "object",
                                     "properties": {
@@ -629,7 +791,7 @@
                                         "user": {
                                             "anyOf": [
                                                 {
-                                                    "$ref": "#\/components\/schemas\/User"
+                                                    "$ref": "#/components/schemas/User"
                                                 },
                                                 {
                                                     "type": "null"
@@ -647,12 +809,12 @@
                         }
                     },
                     "422": {
-                        "$ref": "#\/components\/responses\/ValidationException"
+                        "$ref": "#/components/responses/ValidationException"
                     }
                 }
             }
         },
-        "\/forgot-password": {
+        "/forgot-password": {
             "post": {
                 "operationId": "auth.forgotPassword",
                 "tags": [
@@ -661,7 +823,7 @@
                 "requestBody": {
                     "required": true,
                     "content": {
-                        "application\/json": {
+                        "application/json": {
                             "schema": {
                                 "type": "object",
                                 "properties": {
@@ -681,7 +843,7 @@
                     "200": {
                         "description": "",
                         "content": {
-                            "application\/json": {
+                            "application/json": {
                                 "schema": {
                                     "type": "object",
                                     "properties": {
@@ -700,7 +862,7 @@
                     "500": {
                         "description": "",
                         "content": {
-                            "application\/json": {
+                            "application/json": {
                                 "schema": {
                                     "type": "object",
                                     "properties": {
@@ -717,12 +879,12 @@
                         }
                     },
                     "422": {
-                        "$ref": "#\/components\/responses\/ValidationException"
+                        "$ref": "#/components/responses/ValidationException"
                     }
                 }
             }
         },
-        "\/reset-password": {
+        "/reset-password": {
             "post": {
                 "operationId": "auth.resetPasswordFromToken",
                 "tags": [
@@ -731,7 +893,7 @@
                 "requestBody": {
                     "required": true,
                     "content": {
-                        "application\/json": {
+                        "application/json": {
                             "schema": {
                                 "type": "object",
                                 "properties": {
@@ -765,7 +927,7 @@
                     "200": {
                         "description": "",
                         "content": {
-                            "application\/json": {
+                            "application/json": {
                                 "schema": {
                                     "type": "object",
                                     "properties": {
@@ -782,12 +944,12 @@
                         }
                     },
                     "422": {
-                        "$ref": "#\/components\/responses\/ValidationException"
+                        "$ref": "#/components/responses/ValidationException"
                     }
                 }
             }
         },
-        "\/logout": {
+        "/logout": {
             "post": {
                 "operationId": "auth.logout",
                 "tags": [
@@ -797,7 +959,7 @@
                     "200": {
                         "description": "",
                         "content": {
-                            "application\/json": {
+                            "application/json": {
                                 "schema": {
                                     "type": "object",
                                     "properties": {
@@ -814,12 +976,12 @@
                         }
                     },
                     "401": {
-                        "$ref": "#\/components\/responses\/AuthenticationException"
+                        "$ref": "#/components/responses/AuthenticationException"
                     }
                 }
             }
         },
-        "\/me": {
+        "/me": {
             "get": {
                 "operationId": "auth.me",
                 "tags": [
@@ -829,20 +991,20 @@
                     "200": {
                         "description": "",
                         "content": {
-                            "application\/json": {
+                            "application/json": {
                                 "schema": {
-                                    "$ref": "#\/components\/schemas\/User"
+                                    "$ref": "#/components/schemas/User"
                                 }
                             }
                         }
                     },
                     "401": {
-                        "$ref": "#\/components\/responses\/AuthenticationException"
+                        "$ref": "#/components/responses/AuthenticationException"
                     }
                 }
             }
         },
-        "\/profile": {
+        "/profile": {
             "put": {
                 "operationId": "auth.updateProfile",
                 "tags": [
@@ -851,7 +1013,7 @@
                 "requestBody": {
                     "required": true,
                     "content": {
-                        "application\/json": {
+                        "application/json": {
                             "schema": {
                                 "type": "object",
                                 "properties": {
@@ -881,7 +1043,7 @@
                     "200": {
                         "description": "",
                         "content": {
-                            "application\/json": {
+                            "application/json": {
                                 "schema": {
                                     "type": "object",
                                     "properties": {
@@ -890,7 +1052,7 @@
                                             "const": "Profil berhasil diperbarui."
                                         },
                                         "user": {
-                                            "$ref": "#\/components\/schemas\/User"
+                                            "$ref": "#/components/schemas/User"
                                         }
                                     },
                                     "required": [
@@ -902,15 +1064,15 @@
                         }
                     },
                     "422": {
-                        "$ref": "#\/components\/responses\/ValidationException"
+                        "$ref": "#/components/responses/ValidationException"
                     },
                     "401": {
-                        "$ref": "#\/components\/responses\/AuthenticationException"
+                        "$ref": "#/components/responses/AuthenticationException"
                     }
                 }
             }
         },
-        "\/profile\/password": {
+        "/profile/password": {
             "put": {
                 "operationId": "auth.updatePassword",
                 "tags": [
@@ -919,7 +1081,7 @@
                 "requestBody": {
                     "required": true,
                     "content": {
-                        "application\/json": {
+                        "application/json": {
                             "schema": {
                                 "type": "object",
                                 "properties": {
@@ -948,7 +1110,7 @@
                     "200": {
                         "description": "",
                         "content": {
-                            "application\/json": {
+                            "application/json": {
                                 "schema": {
                                     "type": "object",
                                     "properties": {
@@ -957,7 +1119,7 @@
                                             "const": "Password berhasil diperbarui."
                                         },
                                         "user": {
-                                            "$ref": "#\/components\/schemas\/User"
+                                            "$ref": "#/components/schemas/User"
                                         }
                                     },
                                     "required": [
@@ -969,15 +1131,15 @@
                         }
                     },
                     "422": {
-                        "$ref": "#\/components\/responses\/ValidationException"
+                        "$ref": "#/components/responses/ValidationException"
                     },
                     "401": {
-                        "$ref": "#\/components\/responses\/AuthenticationException"
+                        "$ref": "#/components/responses/AuthenticationException"
                     }
                 }
             }
         },
-        "\/board\/move": {
+        "/board/move": {
             "patch": {
                 "operationId": "board.move",
                 "tags": [
@@ -986,7 +1148,7 @@
                 "requestBody": {
                     "required": true,
                     "content": {
-                        "application\/json": {
+                        "application/json": {
                             "schema": {
                                 "type": "object",
                                 "properties": {
@@ -1023,7 +1185,7 @@
                     "200": {
                         "description": "",
                         "content": {
-                            "application\/json": {
+                            "application/json": {
                                 "schema": {
                                     "anyOf": [
                                         {
@@ -1036,7 +1198,7 @@
                                                 "data": {
                                                     "anyOf": [
                                                         {
-                                                            "$ref": "#\/components\/schemas\/Ticket"
+                                                            "$ref": "#/components/schemas/Ticket"
                                                         },
                                                         {
                                                             "type": "null"
@@ -1057,7 +1219,7 @@
                                                     "const": "Status tidak berubah"
                                                 },
                                                 "data": {
-                                                    "$ref": "#\/components\/schemas\/Ticket"
+                                                    "$ref": "#/components/schemas/Ticket"
                                                 }
                                             },
                                             "required": [
@@ -1071,15 +1233,15 @@
                         }
                     },
                     "422": {
-                        "$ref": "#\/components\/responses\/ValidationException"
+                        "$ref": "#/components/responses/ValidationException"
                     },
                     "401": {
-                        "$ref": "#\/components\/responses\/AuthenticationException"
+                        "$ref": "#/components/responses/AuthenticationException"
                     }
                 }
             }
         },
-        "\/notifications\/in-app": {
+        "/notifications/in-app": {
             "get": {
                 "operationId": "inAppNotification.index",
                 "tags": [
@@ -1106,7 +1268,7 @@
                     "200": {
                         "description": "",
                         "content": {
-                            "application\/json": {
+                            "application/json": {
                                 "schema": {
                                     "anyOf": [
                                         {
@@ -1233,12 +1395,12 @@
                         }
                     },
                     "401": {
-                        "$ref": "#\/components\/responses\/AuthenticationException"
+                        "$ref": "#/components/responses/AuthenticationException"
                     }
                 }
             }
         },
-        "\/notifications\/in-app\/{id}\/read": {
+        "/notifications/in-app/{id}/read": {
             "post": {
                 "operationId": "inAppNotification.markRead",
                 "tags": [
@@ -1258,7 +1420,7 @@
                     "200": {
                         "description": "",
                         "content": {
-                            "application\/json": {
+                            "application/json": {
                                 "schema": {
                                     "type": "object",
                                     "properties": {
@@ -1289,12 +1451,12 @@
                         }
                     },
                     "401": {
-                        "$ref": "#\/components\/responses\/AuthenticationException"
+                        "$ref": "#/components/responses/AuthenticationException"
                     }
                 }
             }
         },
-        "\/notification\/preferences": {
+        "/notification/preferences": {
             "get": {
                 "operationId": "notificationPreference.show",
                 "tags": [
@@ -1304,12 +1466,12 @@
                     "200": {
                         "description": "",
                         "content": {
-                            "application\/json": {
+                            "application/json": {
                                 "schema": {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#\/components\/schemas\/NotificationPreference"
+                                            "$ref": "#/components/schemas/NotificationPreference"
                                         }
                                     },
                                     "required": [
@@ -1320,7 +1482,7 @@
                         }
                     },
                     "401": {
-                        "$ref": "#\/components\/responses\/AuthenticationException"
+                        "$ref": "#/components/responses/AuthenticationException"
                     }
                 }
             },
@@ -1331,7 +1493,7 @@
                 ],
                 "requestBody": {
                     "content": {
-                        "application\/json": {
+                        "application/json": {
                             "schema": {
                                 "type": "object",
                                 "properties": {
@@ -1413,14 +1575,14 @@
                     "200": {
                         "description": "",
                         "content": {
-                            "application\/json": {
+                            "application/json": {
                                 "schema": {
                                     "type": "object",
                                     "properties": {
                                         "data": {
                                             "anyOf": [
                                                 {
-                                                    "$ref": "#\/components\/schemas\/NotificationPreference"
+                                                    "$ref": "#/components/schemas/NotificationPreference"
                                                 },
                                                 {
                                                     "type": "null"
@@ -1436,15 +1598,15 @@
                         }
                     },
                     "422": {
-                        "$ref": "#\/components\/responses\/ValidationException"
+                        "$ref": "#/components/responses/ValidationException"
                     },
                     "401": {
-                        "$ref": "#\/components\/responses\/AuthenticationException"
+                        "$ref": "#/components/responses/AuthenticationException"
                     }
                 }
             }
         },
-        "\/notification\/logs": {
+        "/notification/logs": {
             "get": {
                 "operationId": "notificationPreference.logs",
                 "tags": [
@@ -1454,7 +1616,7 @@
                     "200": {
                         "description": "",
                         "content": {
-                            "application\/json": {
+                            "application/json": {
                                 "schema": {
                                     "type": "object",
                                     "properties": {
@@ -1465,7 +1627,7 @@
                                         "data": {
                                             "type": "array",
                                             "items": {
-                                                "$ref": "#\/components\/schemas\/NotificationLog"
+                                                "$ref": "#/components/schemas/NotificationLog"
                                             }
                                         },
                                         "first_page_url": {
@@ -1575,12 +1737,12 @@
                         }
                     },
                     "401": {
-                        "$ref": "#\/components\/responses\/AuthenticationException"
+                        "$ref": "#/components/responses/AuthenticationException"
                     }
                 }
             }
         },
-        "\/notification\/preview-digest": {
+        "/notification/preview-digest": {
             "get": {
                 "operationId": "notificationPreference.previewDigest",
                 "tags": [
@@ -1600,7 +1762,7 @@
                     "200": {
                         "description": "",
                         "content": {
-                            "application\/json": {
+                            "application/json": {
                                 "schema": {
                                     "type": "object",
                                     "properties": {
@@ -1634,7 +1796,7 @@
                     "422": {
                         "description": "",
                         "content": {
-                            "application\/json": {
+                            "application/json": {
                                 "schema": {
                                     "type": "object",
                                     "properties": {
@@ -1651,12 +1813,12 @@
                         }
                     },
                     "401": {
-                        "$ref": "#\/components\/responses\/AuthenticationException"
+                        "$ref": "#/components/responses/AuthenticationException"
                     }
                 }
             }
         },
-        "\/vapid-public-key": {
+        "/vapid-public-key": {
             "get": {
                 "operationId": "pushSubscription.getPublicKey",
                 "summary": "Get Public VAPID Key",
@@ -1667,7 +1829,7 @@
                     "200": {
                         "description": "",
                         "content": {
-                            "application\/json": {
+                            "application/json": {
                                 "schema": {
                                     "type": "object",
                                     "properties": {
@@ -1683,7 +1845,7 @@
                     "500": {
                         "description": "",
                         "content": {
-                            "application\/json": {
+                            "application/json": {
                                 "schema": {
                                     "type": "object",
                                     "properties": {
@@ -1702,7 +1864,7 @@
                 }
             }
         },
-        "\/push-subscriptions": {
+        "/push-subscriptions": {
             "post": {
                 "operationId": "pushSubscription.subscribe",
                 "summary": "Store or update Web Push Subscription",
@@ -1712,7 +1874,7 @@
                 "requestBody": {
                     "required": true,
                     "content": {
-                        "application\/json": {
+                        "application/json": {
                             "schema": {
                                 "type": "object",
                                 "properties": {
@@ -1752,7 +1914,7 @@
                     "201": {
                         "description": "",
                         "content": {
-                            "application\/json": {
+                            "application/json": {
                                 "schema": {
                                     "type": "object",
                                     "properties": {
@@ -1761,7 +1923,7 @@
                                             "const": "Push subscription saved successfully."
                                         },
                                         "subscription": {
-                                            "$ref": "#\/components\/schemas\/PushSubscription"
+                                            "$ref": "#/components/schemas/PushSubscription"
                                         }
                                     },
                                     "required": [
@@ -1773,15 +1935,15 @@
                         }
                     },
                     "422": {
-                        "$ref": "#\/components\/responses\/ValidationException"
+                        "$ref": "#/components/responses/ValidationException"
                     },
                     "401": {
-                        "$ref": "#\/components\/responses\/AuthenticationException"
+                        "$ref": "#/components/responses/AuthenticationException"
                     }
                 }
             }
         },
-        "\/send-test-push": {
+        "/send-test-push": {
             "post": {
                 "operationId": "pushSubscription.sendTestPush",
                 "summary": "Send Test Web Push Notification",
@@ -1792,7 +1954,7 @@
                     "200": {
                         "description": "",
                         "content": {
-                            "application\/json": {
+                            "application/json": {
                                 "schema": {
                                     "type": "object",
                                     "properties": {
@@ -1814,7 +1976,7 @@
                     "500": {
                         "description": "",
                         "content": {
-                            "application\/json": {
+                            "application/json": {
                                 "schema": {
                                     "type": "object",
                                     "properties": {
@@ -1833,7 +1995,7 @@
                     "404": {
                         "description": "",
                         "content": {
-                            "application\/json": {
+                            "application/json": {
                                 "schema": {
                                     "type": "object",
                                     "properties": {
@@ -1850,12 +2012,12 @@
                         }
                     },
                     "401": {
-                        "$ref": "#\/components\/responses\/AuthenticationException"
+                        "$ref": "#/components/responses/AuthenticationException"
                     }
                 }
             }
         },
-        "\/tickets": {
+        "/tickets": {
             "get": {
                 "operationId": "ticket.index",
                 "tags": [
@@ -1865,18 +2027,18 @@
                     "200": {
                         "description": "",
                         "content": {
-                            "application\/json": {
+                            "application/json": {
                                 "schema": {
                                     "type": "array",
                                     "items": {
-                                        "$ref": "#\/components\/schemas\/Ticket"
+                                        "$ref": "#/components/schemas/Ticket"
                                     }
                                 }
                             }
                         }
                     },
                     "401": {
-                        "$ref": "#\/components\/responses\/AuthenticationException"
+                        "$ref": "#/components/responses/AuthenticationException"
                     }
                 }
             },
@@ -1888,7 +2050,7 @@
                 "requestBody": {
                     "required": true,
                     "content": {
-                        "multipart\/form-data": {
+                        "multipart/form-data": {
                             "schema": {
                                 "type": "object",
                                 "properties": {
@@ -1905,7 +2067,7 @@
                                             "null"
                                         ],
                                         "format": "binary",
-                                        "contentMediaType": "application\/octet-stream",
+                                        "contentMediaType": "application/octet-stream",
                                         "description": "Maximum file size: 5120 kilobytes."
                                     }
                                 },
@@ -1921,9 +2083,9 @@
                     "201": {
                         "description": "",
                         "content": {
-                            "application\/json": {
+                            "application/json": {
                                 "schema": {
-                                    "$ref": "#\/components\/schemas\/Ticket"
+                                    "$ref": "#/components/schemas/Ticket"
                                 }
                             }
                         }
@@ -1931,7 +2093,7 @@
                     "403": {
                         "description": "",
                         "content": {
-                            "application\/json": {
+                            "application/json": {
                                 "schema": {
                                     "type": "object",
                                     "properties": {
@@ -1948,18 +2110,18 @@
                         }
                     },
                     "422": {
-                        "$ref": "#\/components\/responses\/ValidationException"
+                        "$ref": "#/components/responses/ValidationException"
                     },
                     "401": {
-                        "$ref": "#\/components\/responses\/AuthenticationException"
+                        "$ref": "#/components/responses/AuthenticationException"
                     }
                 }
             }
         },
-        "\/tickets\/available": {
+        "/tickets/available": {
             "get": {
                 "operationId": "ticket.availableTickets",
-                "summary": "Programmer: List tickets available for claim.\nGET \/tickets\/available",
+                "summary": "Programmer: List tickets available for claim.\nGET /tickets/available",
                 "tags": [
                     "Ticket"
                 ],
@@ -1967,11 +2129,11 @@
                     "200": {
                         "description": "",
                         "content": {
-                            "application\/json": {
+                            "application/json": {
                                 "schema": {
                                     "type": "array",
                                     "items": {
-                                        "$ref": "#\/components\/schemas\/Ticket"
+                                        "$ref": "#/components/schemas/Ticket"
                                     }
                                 }
                             }
@@ -1980,7 +2142,7 @@
                     "403": {
                         "description": "",
                         "content": {
-                            "application\/json": {
+                            "application/json": {
                                 "schema": {
                                     "type": "object",
                                     "properties": {
@@ -1997,15 +2159,15 @@
                         }
                     },
                     "401": {
-                        "$ref": "#\/components\/responses\/AuthenticationException"
+                        "$ref": "#/components/responses/AuthenticationException"
                     }
                 }
             }
         },
-        "\/tickets\/pending-claims": {
+        "/tickets/pending-claims": {
             "get": {
                 "operationId": "ticket.pendingClaimApprovals",
-                "summary": "PM: List tickets with pending claim approval.\nGET \/tickets\/pending-claims",
+                "summary": "PM: List tickets with pending claim approval.\nGET /tickets/pending-claims",
                 "tags": [
                     "Ticket"
                 ],
@@ -2013,11 +2175,11 @@
                     "200": {
                         "description": "",
                         "content": {
-                            "application\/json": {
+                            "application/json": {
                                 "schema": {
                                     "type": "array",
                                     "items": {
-                                        "$ref": "#\/components\/schemas\/Ticket"
+                                        "$ref": "#/components/schemas/Ticket"
                                     }
                                 }
                             }
@@ -2026,7 +2188,7 @@
                     "403": {
                         "description": "",
                         "content": {
-                            "application\/json": {
+                            "application/json": {
                                 "schema": {
                                     "type": "object",
                                     "properties": {
@@ -2043,22 +2205,22 @@
                         }
                     },
                     "401": {
-                        "$ref": "#\/components\/responses\/AuthenticationException"
+                        "$ref": "#/components/responses/AuthenticationException"
                     }
                 }
             }
         },
-        "\/tickets\/walk-in": {
+        "/tickets/walk-in": {
             "post": {
                 "operationId": "ticket.storeWalkIn",
-                "summary": "Service Desk: Create a ticket on behalf of a NON-REGISTERED (walk-in) client.\nPOST \/tickets\/walk-in\nThe ticket is created by the Service Desk account (user_id = SD) and goes\ndirectly to 'open' status \u2014 no pending_confirmation step needed",
+                "summary": "Service Desk: Create a ticket on behalf of a NON-REGISTERED (walk-in) client.\nPOST /tickets/walk-in\nThe ticket is created by the Service Desk account (user_id = SD) and goes\ndirectly to 'open' status \u2014 no pending_confirmation step needed",
                 "tags": [
                     "Ticket"
                 ],
                 "requestBody": {
                     "required": true,
                     "content": {
-                        "multipart\/form-data": {
+                        "multipart/form-data": {
                             "schema": {
                                 "type": "object",
                                 "properties": {
@@ -2117,7 +2279,7 @@
                                             "null"
                                         ],
                                         "format": "binary",
-                                        "contentMediaType": "application\/octet-stream",
+                                        "contentMediaType": "application/octet-stream",
                                         "description": "Maximum file size: 5120 kilobytes."
                                     }
                                 },
@@ -2135,9 +2297,9 @@
                     "201": {
                         "description": "",
                         "content": {
-                            "application\/json": {
+                            "application/json": {
                                 "schema": {
-                                    "$ref": "#\/components\/schemas\/Ticket"
+                                    "$ref": "#/components/schemas/Ticket"
                                 }
                             }
                         }
@@ -2145,7 +2307,7 @@
                     "403": {
                         "description": "",
                         "content": {
-                            "application\/json": {
+                            "application/json": {
                                 "schema": {
                                     "type": "object",
                                     "properties": {
@@ -2162,15 +2324,15 @@
                         }
                     },
                     "422": {
-                        "$ref": "#\/components\/responses\/ValidationException"
+                        "$ref": "#/components/responses/ValidationException"
                     },
                     "401": {
-                        "$ref": "#\/components\/responses\/AuthenticationException"
+                        "$ref": "#/components/responses/AuthenticationException"
                     }
                 }
             }
         },
-        "\/tickets\/{id}": {
+        "/tickets/{id}": {
             "get": {
                 "operationId": "ticket.show",
                 "tags": [
@@ -2190,9 +2352,9 @@
                     "200": {
                         "description": "",
                         "content": {
-                            "application\/json": {
+                            "application/json": {
                                 "schema": {
-                                    "$ref": "#\/components\/schemas\/Ticket"
+                                    "$ref": "#/components/schemas/Ticket"
                                 }
                             }
                         }
@@ -2200,7 +2362,7 @@
                     "403": {
                         "description": "",
                         "content": {
-                            "application\/json": {
+                            "application/json": {
                                 "schema": {
                                     "anyOf": [
                                         {
@@ -2235,7 +2397,7 @@
                     "404": {
                         "description": "",
                         "content": {
-                            "application\/json": {
+                            "application/json": {
                                 "schema": {
                                     "type": "object",
                                     "properties": {
@@ -2252,12 +2414,169 @@
                         }
                     },
                     "401": {
-                        "$ref": "#\/components\/responses\/AuthenticationException"
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            },
+            "delete": {
+                "operationId": "ticket.destroy",
+                "tags": [
+                    "Ticket"
+                ],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "reason",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "const": "Tiket berhasil dihapus dan diarsipkan."
+                                        }
+                                    },
+                                    "required": [
+                                        "message"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "const": "Tiket tidak ditemukan"
+                                        }
+                                    },
+                                    "required": [
+                                        "message"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
                     }
                 }
             }
         },
-        "\/client\/tickets": {
+        "/tickets/{id}/restore": {
+            "post": {
+                "operationId": "ticket.restore",
+                "tags": [
+                    "Ticket"
+                ],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "const": "Tiket berhasil dikembalikan."
+                                        },
+                                        "ticket": {
+                                            "anyOf": [
+                                                {
+                                                    "$ref": "#/components/schemas/Ticket"
+                                                },
+                                                {
+                                                    "type": "null"
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "message",
+                                        "ticket"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "const": "Tiket tidak dalam status terhapus."
+                                        }
+                                    },
+                                    "required": [
+                                        "message"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "const": "Tiket tidak ditemukan"
+                                        }
+                                    },
+                                    "required": [
+                                        "message"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
+        "/client/tickets": {
             "get": {
                 "operationId": "ticket.clientIndex",
                 "tags": [
@@ -2267,18 +2586,18 @@
                     "200": {
                         "description": "",
                         "content": {
-                            "application\/json": {
+                            "application/json": {
                                 "schema": {
                                     "type": "array",
                                     "items": {
-                                        "$ref": "#\/components\/schemas\/Ticket"
+                                        "$ref": "#/components/schemas/Ticket"
                                     }
                                 }
                             }
                         }
                     },
                     "401": {
-                        "$ref": "#\/components\/responses\/AuthenticationException"
+                        "$ref": "#/components/responses/AuthenticationException"
                     }
                 }
             },
@@ -2290,7 +2609,7 @@
                 "requestBody": {
                     "required": true,
                     "content": {
-                        "multipart\/form-data": {
+                        "multipart/form-data": {
                             "schema": {
                                 "type": "object",
                                 "properties": {
@@ -2321,7 +2640,7 @@
                                             "null"
                                         ],
                                         "format": "binary",
-                                        "contentMediaType": "application\/octet-stream",
+                                        "contentMediaType": "application/octet-stream",
                                         "description": "Maximum file size: 5120 kilobytes."
                                     }
                                 },
@@ -2337,23 +2656,23 @@
                     "201": {
                         "description": "",
                         "content": {
-                            "application\/json": {
+                            "application/json": {
                                 "schema": {
-                                    "$ref": "#\/components\/schemas\/Ticket"
+                                    "$ref": "#/components/schemas/Ticket"
                                 }
                             }
                         }
                     },
                     "422": {
-                        "$ref": "#\/components\/responses\/ValidationException"
+                        "$ref": "#/components/responses/ValidationException"
                     },
                     "401": {
-                        "$ref": "#\/components\/responses\/AuthenticationException"
+                        "$ref": "#/components/responses/AuthenticationException"
                     }
                 }
             }
         },
-        "\/client\/tickets\/{id}": {
+        "/client/tickets/{id}": {
             "get": {
                 "operationId": "ticket.clientShow",
                 "tags": [
@@ -2373,11 +2692,11 @@
                     "200": {
                         "description": "",
                         "content": {
-                            "application\/json": {
+                            "application/json": {
                                 "schema": {
                                     "anyOf": [
                                         {
-                                            "$ref": "#\/components\/schemas\/Ticket"
+                                            "$ref": "#/components/schemas/Ticket"
                                         },
                                         {
                                             "type": "null"
@@ -2390,7 +2709,7 @@
                     "404": {
                         "description": "",
                         "content": {
-                            "application\/json": {
+                            "application/json": {
                                 "schema": {
                                     "type": "object",
                                     "properties": {
@@ -2407,12 +2726,12 @@
                         }
                     },
                     "401": {
-                        "$ref": "#\/components\/responses\/AuthenticationException"
+                        "$ref": "#/components/responses/AuthenticationException"
                     }
                 }
             }
         },
-        "\/tickets\/{id}\/assign": {
+        "/tickets/{id}/assign": {
             "post": {
                 "operationId": "ticket.assign",
                 "tags": [
@@ -2431,7 +2750,7 @@
                 "requestBody": {
                     "required": true,
                     "content": {
-                        "application\/json": {
+                        "application/json": {
                             "schema": {
                                 "type": "object",
                                 "properties": {
@@ -2479,7 +2798,7 @@
                     "200": {
                         "description": "",
                         "content": {
-                            "application\/json": {
+                            "application/json": {
                                 "schema": {
                                     "type": "object",
                                     "properties": {
@@ -2488,7 +2807,7 @@
                                             "const": "Ticket assigned successfully"
                                         },
                                         "ticket": {
-                                            "$ref": "#\/components\/schemas\/Ticket"
+                                            "$ref": "#/components/schemas/Ticket"
                                         }
                                     },
                                     "required": [
@@ -2500,12 +2819,12 @@
                         }
                     },
                     "422": {
-                        "$ref": "#\/components\/responses\/ValidationException"
+                        "$ref": "#/components/responses/ValidationException"
                     },
                     "403": {
                         "description": "",
                         "content": {
-                            "application\/json": {
+                            "application/json": {
                                 "schema": {
                                     "type": "object",
                                     "properties": {
@@ -2524,7 +2843,7 @@
                     "404": {
                         "description": "",
                         "content": {
-                            "application\/json": {
+                            "application/json": {
                                 "schema": {
                                     "type": "object",
                                     "properties": {
@@ -2541,15 +2860,15 @@
                         }
                     },
                     "401": {
-                        "$ref": "#\/components\/responses\/AuthenticationException"
+                        "$ref": "#/components/responses/AuthenticationException"
                     }
                 }
             }
         },
-        "\/tickets\/{id}\/release-for-claim": {
+        "/tickets/{id}/release-for-claim": {
             "post": {
                 "operationId": "ticket.releaseForClaim",
-                "summary": "PM: Release ticket to programmer claim pool.\nPOST \/tickets\/{ticket}\/release-for-claim",
+                "summary": "PM: Release ticket to programmer claim pool.\nPOST /tickets/{ticket}/release-for-claim",
                 "tags": [
                     "Ticket"
                 ],
@@ -2566,7 +2885,7 @@
                 "requestBody": {
                     "required": true,
                     "content": {
-                        "application\/json": {
+                        "application/json": {
                             "schema": {
                                 "type": "object",
                                 "properties": {
@@ -2585,7 +2904,7 @@
                     "200": {
                         "description": "",
                         "content": {
-                            "application\/json": {
+                            "application/json": {
                                 "schema": {
                                     "type": "object",
                                     "properties": {
@@ -2594,7 +2913,7 @@
                                             "const": "Tiket berhasil dirilis ke Available Tickets untuk programmer."
                                         },
                                         "ticket": {
-                                            "$ref": "#\/components\/schemas\/Ticket"
+                                            "$ref": "#/components/schemas/Ticket"
                                         }
                                     },
                                     "required": [
@@ -2606,12 +2925,12 @@
                         }
                     },
                     "422": {
-                        "$ref": "#\/components\/responses\/ValidationException"
+                        "$ref": "#/components/responses/ValidationException"
                     },
                     "404": {
                         "description": "",
                         "content": {
-                            "application\/json": {
+                            "application/json": {
                                 "schema": {
                                     "type": "object",
                                     "properties": {
@@ -2630,7 +2949,7 @@
                     "403": {
                         "description": "",
                         "content": {
-                            "application\/json": {
+                            "application/json": {
                                 "schema": {
                                     "type": "object",
                                     "properties": {
@@ -2647,15 +2966,15 @@
                         }
                     },
                     "401": {
-                        "$ref": "#\/components\/responses\/AuthenticationException"
+                        "$ref": "#/components/responses/AuthenticationException"
                     }
                 }
             }
         },
-        "\/tickets\/{id}\/claim": {
+        "/tickets/{id}/claim": {
             "post": {
                 "operationId": "ticket.claimTicket",
-                "summary": "Programmer: Claim a ticket (waiting_programmer \u2192 waiting_pm_approval).\nPOST \/tickets\/{ticket}\/claim",
+                "summary": "Programmer: Claim a ticket (waiting_programmer \u2192 waiting_pm_approval).\nPOST /tickets/{ticket}/claim",
                 "tags": [
                     "Ticket"
                 ],
@@ -2673,7 +2992,7 @@
                     "200": {
                         "description": "",
                         "content": {
-                            "application\/json": {
+                            "application/json": {
                                 "schema": {
                                     "type": "object",
                                     "properties": {
@@ -2682,7 +3001,7 @@
                                             "const": "Claim berhasil diajukan. Menunggu persetujuan PM."
                                         },
                                         "ticket": {
-                                            "$ref": "#\/components\/schemas\/Ticket"
+                                            "$ref": "#/components/schemas/Ticket"
                                         }
                                     },
                                     "required": [
@@ -2696,7 +3015,7 @@
                     "422": {
                         "description": "",
                         "content": {
-                            "application\/json": {
+                            "application/json": {
                                 "schema": {
                                     "anyOf": [
                                         {
@@ -2743,7 +3062,7 @@
                     "404": {
                         "description": "",
                         "content": {
-                            "application\/json": {
+                            "application/json": {
                                 "schema": {
                                     "type": "object",
                                     "properties": {
@@ -2762,7 +3081,7 @@
                     "403": {
                         "description": "",
                         "content": {
-                            "application\/json": {
+                            "application/json": {
                                 "schema": {
                                     "type": "object",
                                     "properties": {
@@ -2779,15 +3098,15 @@
                         }
                     },
                     "401": {
-                        "$ref": "#\/components\/responses\/AuthenticationException"
+                        "$ref": "#/components/responses/AuthenticationException"
                     }
                 }
             }
         },
-        "\/tickets\/{id}\/approve-claim": {
+        "/tickets/{id}/approve-claim": {
             "post": {
                 "operationId": "ticket.approveClaim",
-                "summary": "PM: Approve programmer claim \u2192 assigned.\nPOST \/tickets\/{ticket}\/approve-claim",
+                "summary": "PM: Approve programmer claim \u2192 assigned.\nPOST /tickets/{ticket}/approve-claim",
                 "tags": [
                     "Ticket"
                 ],
@@ -2804,7 +3123,7 @@
                 "requestBody": {
                     "required": true,
                     "content": {
-                        "application\/json": {
+                        "application/json": {
                             "schema": {
                                 "type": "object",
                                 "properties": {
@@ -2841,7 +3160,7 @@
                     "200": {
                         "description": "",
                         "content": {
-                            "application\/json": {
+                            "application/json": {
                                 "schema": {
                                     "type": "object",
                                     "properties": {
@@ -2849,7 +3168,7 @@
                                             "type": "string"
                                         },
                                         "ticket": {
-                                            "$ref": "#\/components\/schemas\/Ticket"
+                                            "$ref": "#/components/schemas/Ticket"
                                         }
                                     },
                                     "required": [
@@ -2861,12 +3180,12 @@
                         }
                     },
                     "422": {
-                        "$ref": "#\/components\/responses\/ValidationException"
+                        "$ref": "#/components/responses/ValidationException"
                     },
                     "404": {
                         "description": "",
                         "content": {
-                            "application\/json": {
+                            "application/json": {
                                 "schema": {
                                     "type": "object",
                                     "properties": {
@@ -2885,7 +3204,7 @@
                     "403": {
                         "description": "",
                         "content": {
-                            "application\/json": {
+                            "application/json": {
                                 "schema": {
                                     "type": "object",
                                     "properties": {
@@ -2902,15 +3221,15 @@
                         }
                     },
                     "401": {
-                        "$ref": "#\/components\/responses\/AuthenticationException"
+                        "$ref": "#/components/responses/AuthenticationException"
                     }
                 }
             }
         },
-        "\/tickets\/{id}\/reject-claim": {
+        "/tickets/{id}/reject-claim": {
             "post": {
                 "operationId": "ticket.rejectClaim",
-                "summary": "PM: Reject programmer claim \u2192 waiting_programmer.\nPOST \/tickets\/{ticket}\/reject-claim",
+                "summary": "PM: Reject programmer claim \u2192 waiting_programmer.\nPOST /tickets/{ticket}/reject-claim",
                 "tags": [
                     "Ticket"
                 ],
@@ -2927,7 +3246,7 @@
                 "requestBody": {
                     "required": true,
                     "content": {
-                        "application\/json": {
+                        "application/json": {
                             "schema": {
                                 "type": "object",
                                 "properties": {
@@ -2946,7 +3265,7 @@
                     "200": {
                         "description": "",
                         "content": {
-                            "application\/json": {
+                            "application/json": {
                                 "schema": {
                                     "type": "object",
                                     "properties": {
@@ -2955,7 +3274,7 @@
                                             "const": "Claim ditolak. Tiket kembali tersedia di Available Tickets."
                                         },
                                         "ticket": {
-                                            "$ref": "#\/components\/schemas\/Ticket"
+                                            "$ref": "#/components/schemas/Ticket"
                                         }
                                     },
                                     "required": [
@@ -2967,12 +3286,12 @@
                         }
                     },
                     "422": {
-                        "$ref": "#\/components\/responses\/ValidationException"
+                        "$ref": "#/components/responses/ValidationException"
                     },
                     "404": {
                         "description": "",
                         "content": {
-                            "application\/json": {
+                            "application/json": {
                                 "schema": {
                                     "type": "object",
                                     "properties": {
@@ -2991,7 +3310,7 @@
                     "403": {
                         "description": "",
                         "content": {
-                            "application\/json": {
+                            "application/json": {
                                 "schema": {
                                     "type": "object",
                                     "properties": {
@@ -3008,12 +3327,12 @@
                         }
                     },
                     "401": {
-                        "$ref": "#\/components\/responses\/AuthenticationException"
+                        "$ref": "#/components/responses/AuthenticationException"
                     }
                 }
             }
         },
-        "\/tickets\/{id}\/escalate": {
+        "/tickets/{id}/escalate": {
             "post": {
                 "operationId": "ticket.escalate",
                 "tags": [
@@ -3032,7 +3351,7 @@
                 "requestBody": {
                     "required": true,
                     "content": {
-                        "application\/json": {
+                        "application/json": {
                             "schema": {
                                 "type": "object",
                                 "properties": {
@@ -3081,7 +3400,7 @@
                     "200": {
                         "description": "",
                         "content": {
-                            "application\/json": {
+                            "application/json": {
                                 "schema": {
                                     "type": "object",
                                     "properties": {
@@ -3090,7 +3409,7 @@
                                             "const": "Tiket berhasil dieskalasikan ke Project Manager dan tersedia di Available Tickets programmer."
                                         },
                                         "ticket": {
-                                            "$ref": "#\/components\/schemas\/Ticket"
+                                            "$ref": "#/components/schemas/Ticket"
                                         }
                                     },
                                     "required": [
@@ -3104,7 +3423,7 @@
                     "404": {
                         "description": "",
                         "content": {
-                            "application\/json": {
+                            "application/json": {
                                 "schema": {
                                     "type": "object",
                                     "properties": {
@@ -3123,7 +3442,7 @@
                     "403": {
                         "description": "",
                         "content": {
-                            "application\/json": {
+                            "application/json": {
                                 "schema": {
                                     "type": "object",
                                     "properties": {
@@ -3140,18 +3459,18 @@
                         }
                     },
                     "422": {
-                        "$ref": "#\/components\/responses\/ValidationException"
+                        "$ref": "#/components/responses/ValidationException"
                     },
                     "401": {
-                        "$ref": "#\/components\/responses\/AuthenticationException"
+                        "$ref": "#/components/responses/AuthenticationException"
                     }
                 }
             }
         },
-        "\/tickets\/{id}\/confirm": {
+        "/tickets/{id}/confirm": {
             "post": {
                 "operationId": "ticket.confirmTicket",
-                "summary": "Service Desk: Confirm or reject a pending_confirmation ticket from client.\nPOST \/tickets\/{id}\/confirm\nbody: { action: 'confirm'|'reject', notes: string }",
+                "summary": "Service Desk: Confirm or reject a pending_confirmation ticket from client.\nPOST /tickets/{id}/confirm\nbody: { action: 'confirm'|'reject', notes: string }",
                 "tags": [
                     "Ticket"
                 ],
@@ -3168,7 +3487,7 @@
                 "requestBody": {
                     "required": true,
                     "content": {
-                        "application\/json": {
+                        "application/json": {
                             "schema": {
                                 "type": "object",
                                 "properties": {
@@ -3195,7 +3514,7 @@
                     "200": {
                         "description": "",
                         "content": {
-                            "application\/json": {
+                            "application/json": {
                                 "schema": {
                                     "anyOf": [
                                         {
@@ -3206,7 +3525,7 @@
                                                     "const": "Tiket ditolak dan ditutup."
                                                 },
                                                 "ticket": {
-                                                    "$ref": "#\/components\/schemas\/Ticket"
+                                                    "$ref": "#/components/schemas/Ticket"
                                                 }
                                             },
                                             "required": [
@@ -3222,7 +3541,7 @@
                                                     "const": "Tiket berhasil dikonfirmasi dan masuk ke antrian."
                                                 },
                                                 "ticket": {
-                                                    "$ref": "#\/components\/schemas\/Ticket"
+                                                    "$ref": "#/components/schemas/Ticket"
                                                 }
                                             },
                                             "required": [
@@ -3236,12 +3555,12 @@
                         }
                     },
                     "422": {
-                        "$ref": "#\/components\/responses\/ValidationException"
+                        "$ref": "#/components/responses/ValidationException"
                     },
                     "403": {
                         "description": "",
                         "content": {
-                            "application\/json": {
+                            "application/json": {
                                 "schema": {
                                     "type": "object",
                                     "properties": {
@@ -3260,7 +3579,7 @@
                     "404": {
                         "description": "",
                         "content": {
-                            "application\/json": {
+                            "application/json": {
                                 "schema": {
                                     "type": "object",
                                     "properties": {
@@ -3277,15 +3596,15 @@
                         }
                     },
                     "401": {
-                        "$ref": "#\/components\/responses\/AuthenticationException"
+                        "$ref": "#/components/responses/AuthenticationException"
                     }
                 }
             }
         },
-        "\/tickets\/{id}\/priority": {
+        "/tickets/{id}/priority": {
             "post": {
                 "operationId": "ticket.updatePriority",
-                "summary": "Project Manager: Update ticket priority at any time (while not closed\/rejected).\nPOST \/tickets\/{id}\/priority\nbody: { priority: 'low'|'medium'|'high'|'belum_ditentukan', notes: string }",
+                "summary": "Project Manager: Update ticket priority at any time (while not closed/rejected).\nPOST /tickets/{id}/priority\nbody: { priority: 'low'|'medium'|'high'|'belum_ditentukan', notes: string }",
                 "tags": [
                     "Ticket"
                 ],
@@ -3302,7 +3621,7 @@
                 "requestBody": {
                     "required": true,
                     "content": {
-                        "application\/json": {
+                        "application/json": {
                             "schema": {
                                 "type": "object",
                                 "properties": {
@@ -3333,7 +3652,7 @@
                     "200": {
                         "description": "",
                         "content": {
-                            "application\/json": {
+                            "application/json": {
                                 "schema": {
                                     "type": "object",
                                     "properties": {
@@ -3342,7 +3661,7 @@
                                             "const": "Prioritas tiket berhasil diperbarui."
                                         },
                                         "ticket": {
-                                            "$ref": "#\/components\/schemas\/Ticket"
+                                            "$ref": "#/components/schemas/Ticket"
                                         }
                                     },
                                     "required": [
@@ -3354,12 +3673,12 @@
                         }
                     },
                     "422": {
-                        "$ref": "#\/components\/responses\/ValidationException"
+                        "$ref": "#/components/responses/ValidationException"
                     },
                     "403": {
                         "description": "",
                         "content": {
-                            "application\/json": {
+                            "application/json": {
                                 "schema": {
                                     "type": "object",
                                     "properties": {
@@ -3378,7 +3697,7 @@
                     "404": {
                         "description": "",
                         "content": {
-                            "application\/json": {
+                            "application/json": {
                                 "schema": {
                                     "type": "object",
                                     "properties": {
@@ -3395,12 +3714,119 @@
                         }
                     },
                     "401": {
-                        "$ref": "#\/components\/responses\/AuthenticationException"
+                        "$ref": "#/components/responses/AuthenticationException"
                     }
                 }
             }
         },
-        "\/tickets\/{id}\/status": {
+        "/tickets/{id}/title": {
+            "patch": {
+                "operationId": "ticket.updateTitle",
+                "tags": [
+                    "Ticket"
+                ],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "title": {
+                                        "type": "string",
+                                        "maxLength": 255
+                                    }
+                                },
+                                "required": [
+                                    "title"
+                                ]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "anyOf": [
+                                        {
+                                            "type": "object",
+                                            "properties": {
+                                                "message": {
+                                                    "type": "string",
+                                                    "const": "Judul tiket berhasil diubah."
+                                                },
+                                                "ticket": {
+                                                    "$ref": "#/components/schemas/Ticket"
+                                                }
+                                            },
+                                            "required": [
+                                                "message",
+                                                "ticket"
+                                            ]
+                                        },
+                                        {
+                                            "type": "object",
+                                            "properties": {
+                                                "message": {
+                                                    "type": "string",
+                                                    "const": "Judul tidak berubah."
+                                                },
+                                                "ticket": {
+                                                    "$ref": "#/components/schemas/Ticket"
+                                                }
+                                            },
+                                            "required": [
+                                                "message",
+                                                "ticket"
+                                            ]
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "const": "Tiket tidak ditemukan"
+                                        }
+                                    },
+                                    "required": [
+                                        "message"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
+        "/tickets/{id}/status": {
             "post": {
                 "operationId": "ticket.updateStatus",
                 "tags": [
@@ -3419,7 +3845,7 @@
                 "requestBody": {
                     "required": true,
                     "content": {
-                        "application\/json": {
+                        "application/json": {
                             "schema": {
                                 "type": "object",
                                 "properties": {
@@ -3452,7 +3878,7 @@
                     "200": {
                         "description": "",
                         "content": {
-                            "application\/json": {
+                            "application/json": {
                                 "schema": {
                                     "type": "object",
                                     "properties": {
@@ -3461,7 +3887,7 @@
                                             "const": "Status updated successfully"
                                         },
                                         "ticket": {
-                                            "$ref": "#\/components\/schemas\/Ticket"
+                                            "$ref": "#/components/schemas/Ticket"
                                         }
                                     },
                                     "required": [
@@ -3475,7 +3901,7 @@
                     "403": {
                         "description": "",
                         "content": {
-                            "application\/json": {
+                            "application/json": {
                                 "schema": {
                                     "anyOf": [
                                         {
@@ -3592,12 +4018,12 @@
                         }
                     },
                     "422": {
-                        "$ref": "#\/components\/responses\/ValidationException"
+                        "$ref": "#/components/responses/ValidationException"
                     },
                     "404": {
                         "description": "",
                         "content": {
-                            "application\/json": {
+                            "application/json": {
                                 "schema": {
                                     "type": "object",
                                     "properties": {
@@ -3614,12 +4040,12 @@
                         }
                     },
                     "401": {
-                        "$ref": "#\/components\/responses\/AuthenticationException"
+                        "$ref": "#/components/responses/AuthenticationException"
                     }
                 }
             }
         },
-        "\/tickets\/{id}\/logs": {
+        "/tickets/{id}/logs": {
             "post": {
                 "operationId": "ticket.addLog",
                 "tags": [
@@ -3638,7 +4064,7 @@
                 "requestBody": {
                     "required": true,
                     "content": {
-                        "application\/json": {
+                        "application/json": {
                             "schema": {
                                 "type": "object",
                                 "properties": {
@@ -3661,7 +4087,7 @@
                     "200": {
                         "description": "",
                         "content": {
-                            "application\/json": {
+                            "application/json": {
                                 "schema": {
                                     "type": "object",
                                     "properties": {
@@ -3673,10 +4099,10 @@
                                             ]
                                         },
                                         "log": {
-                                            "$ref": "#\/components\/schemas\/ProgressLog"
+                                            "$ref": "#/components/schemas/ProgressLog"
                                         },
                                         "ticket": {
-                                            "$ref": "#\/components\/schemas\/Ticket"
+                                            "$ref": "#/components/schemas/Ticket"
                                         }
                                     },
                                     "required": [
@@ -3689,12 +4115,12 @@
                         }
                     },
                     "422": {
-                        "$ref": "#\/components\/responses\/ValidationException"
+                        "$ref": "#/components/responses/ValidationException"
                     },
                     "404": {
                         "description": "",
                         "content": {
-                            "application\/json": {
+                            "application/json": {
                                 "schema": {
                                     "type": "object",
                                     "properties": {
@@ -3711,12 +4137,12 @@
                         }
                     },
                     "401": {
-                        "$ref": "#\/components\/responses\/AuthenticationException"
+                        "$ref": "#/components/responses/AuthenticationException"
                     }
                 }
             }
         },
-        "\/tickets\/{id}\/pm-review": {
+        "/tickets/{id}/pm-review": {
             "post": {
                 "operationId": "ticket.pmReview",
                 "tags": [
@@ -3735,7 +4161,7 @@
                 "requestBody": {
                     "required": true,
                     "content": {
-                        "application\/json": {
+                        "application/json": {
                             "schema": {
                                 "type": "object",
                                 "properties": {
@@ -3765,7 +4191,7 @@
                     "200": {
                         "description": "",
                         "content": {
-                            "application\/json": {
+                            "application/json": {
                                 "schema": {
                                     "anyOf": [
                                         {
@@ -3776,7 +4202,7 @@
                                                     "const": "Hasil pengerjaan ditolak oleh PM (TIDAK OK) dan dikembalikan ke programmer untuk perbaikan."
                                                 },
                                                 "ticket": {
-                                                    "$ref": "#\/components\/schemas\/Ticket"
+                                                    "$ref": "#/components/schemas/Ticket"
                                                 }
                                             },
                                             "required": [
@@ -3792,7 +4218,7 @@
                                                     "const": "Hasil pengerjaan programmer disetujui oleh PM (OK). Tiket siap diverifikasi oleh Service Desk."
                                                 },
                                                 "ticket": {
-                                                    "$ref": "#\/components\/schemas\/Ticket"
+                                                    "$ref": "#/components/schemas/Ticket"
                                                 }
                                             },
                                             "required": [
@@ -3806,12 +4232,12 @@
                         }
                     },
                     "422": {
-                        "$ref": "#\/components\/responses\/ValidationException"
+                        "$ref": "#/components/responses/ValidationException"
                     },
                     "403": {
                         "description": "",
                         "content": {
-                            "application\/json": {
+                            "application/json": {
                                 "schema": {
                                     "type": "object",
                                     "properties": {
@@ -3830,7 +4256,7 @@
                     "404": {
                         "description": "",
                         "content": {
-                            "application\/json": {
+                            "application/json": {
                                 "schema": {
                                     "type": "object",
                                     "properties": {
@@ -3847,12 +4273,12 @@
                         }
                     },
                     "401": {
-                        "$ref": "#\/components\/responses\/AuthenticationException"
+                        "$ref": "#/components/responses/AuthenticationException"
                     }
                 }
             }
         },
-        "\/tickets\/{id}\/escalate-owner": {
+        "/tickets/{id}/escalate-owner": {
             "post": {
                 "operationId": "ticket.escalateOwner",
                 "tags": [
@@ -3871,7 +4297,7 @@
                 "requestBody": {
                     "required": true,
                     "content": {
-                        "application\/json": {
+                        "application/json": {
                             "schema": {
                                 "type": "object",
                                 "properties": {
@@ -3890,7 +4316,7 @@
                     "200": {
                         "description": "",
                         "content": {
-                            "application\/json": {
+                            "application/json": {
                                 "schema": {
                                     "type": "object",
                                     "properties": {
@@ -3899,7 +4325,7 @@
                                             "const": "Tiket berhasil diserahkan ke Owner untuk persetujuan."
                                         },
                                         "ticket": {
-                                            "$ref": "#\/components\/schemas\/Ticket"
+                                            "$ref": "#/components/schemas/Ticket"
                                         }
                                     },
                                     "required": [
@@ -3913,7 +4339,7 @@
                     "403": {
                         "description": "",
                         "content": {
-                            "application\/json": {
+                            "application/json": {
                                 "schema": {
                                     "type": "object",
                                     "properties": {
@@ -3932,7 +4358,7 @@
                     "404": {
                         "description": "",
                         "content": {
-                            "application\/json": {
+                            "application/json": {
                                 "schema": {
                                     "type": "object",
                                     "properties": {
@@ -3949,15 +4375,15 @@
                         }
                     },
                     "422": {
-                        "$ref": "#\/components\/responses\/ValidationException"
+                        "$ref": "#/components/responses/ValidationException"
                     },
                     "401": {
-                        "$ref": "#\/components\/responses\/AuthenticationException"
+                        "$ref": "#/components/responses/AuthenticationException"
                     }
                 }
             }
         },
-        "\/tickets\/{id}\/owner-decision": {
+        "/tickets/{id}/owner-decision": {
             "post": {
                 "operationId": "ticket.ownerDecision",
                 "tags": [
@@ -3976,7 +4402,7 @@
                 "requestBody": {
                     "required": true,
                     "content": {
-                        "application\/json": {
+                        "application/json": {
                             "schema": {
                                 "type": "object",
                                 "properties": {
@@ -4005,7 +4431,7 @@
                     "200": {
                         "description": "",
                         "content": {
-                            "application\/json": {
+                            "application/json": {
                                 "schema": {
                                     "type": "object",
                                     "properties": {
@@ -4014,7 +4440,7 @@
                                             "const": "Keputusan Owner: Dikembalikan ke PM dengan instruksi kajian ulang."
                                         },
                                         "ticket": {
-                                            "$ref": "#\/components\/schemas\/Ticket"
+                                            "$ref": "#/components/schemas/Ticket"
                                         }
                                     },
                                     "required": [
@@ -4028,7 +4454,7 @@
                     "403": {
                         "description": "",
                         "content": {
-                            "application\/json": {
+                            "application/json": {
                                 "schema": {
                                     "type": "object",
                                     "properties": {
@@ -4047,7 +4473,7 @@
                     "404": {
                         "description": "",
                         "content": {
-                            "application\/json": {
+                            "application/json": {
                                 "schema": {
                                     "type": "object",
                                     "properties": {
@@ -4064,10 +4490,10 @@
                         }
                     },
                     "422": {
-                        "$ref": "#\/components\/responses\/ValidationException"
+                        "$ref": "#/components/responses/ValidationException"
                     },
                     "401": {
-                        "$ref": "#\/components\/responses\/AuthenticationException"
+                        "$ref": "#/components/responses/AuthenticationException"
                     }
                 }
             }
@@ -4114,6 +4540,150 @@
                     "created_at"
                 ],
                 "title": "AdminActivityLog"
+            },
+            "ArchivedTicket": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer"
+                    },
+                    "original_ticket_id": {
+                        "type": "integer"
+                    },
+                    "ticket_id": {
+                        "type": "string"
+                    },
+                    "title": {
+                        "type": "string"
+                    },
+                    "description": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "category": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "priority": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "status": {
+                        "type": "string"
+                    },
+                    "internal_notes": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "assigned_to_role": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "attachment_path": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "user_id": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ]
+                    },
+                    "claimed_programmer_id": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ]
+                    },
+                    "reporter_name": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "reporter_contact": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "contact_method": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "contact_method_notes": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "archived_by": {
+                        "type": "integer"
+                    },
+                    "archived_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "archive_reason": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "created_at": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "format": "date-time"
+                    },
+                    "updated_at": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "format": "date-time"
+                    }
+                },
+                "required": [
+                    "id",
+                    "original_ticket_id",
+                    "ticket_id",
+                    "title",
+                    "description",
+                    "category",
+                    "priority",
+                    "status",
+                    "internal_notes",
+                    "assigned_to_role",
+                    "attachment_path",
+                    "user_id",
+                    "claimed_programmer_id",
+                    "reporter_name",
+                    "reporter_contact",
+                    "contact_method",
+                    "contact_method_notes",
+                    "archived_by",
+                    "archived_at",
+                    "archive_reason",
+                    "created_at",
+                    "updated_at"
+                ],
+                "title": "ArchivedTicket"
             },
             "NotificationLog": {
                 "type": "object",
@@ -4504,6 +5074,13 @@
                             "null"
                         ],
                         "format": "date-time"
+                    },
+                    "deleted_at": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "format": "date-time"
                     }
                 },
                 "required": [
@@ -4524,7 +5101,8 @@
                     "contact_method",
                     "contact_method_notes",
                     "created_at",
-                    "updated_at"
+                    "updated_at",
+                    "deleted_at"
                 ],
                 "title": "Ticket"
             },
@@ -4585,7 +5163,7 @@
             "ValidationException": {
                 "description": "Validation error",
                 "content": {
-                    "application\/json": {
+                    "application/json": {
                         "schema": {
                             "type": "object",
                             "properties": {
@@ -4615,7 +5193,7 @@
             "AuthenticationException": {
                 "description": "Unauthenticated",
                 "content": {
-                    "application\/json": {
+                    "application/json": {
                         "schema": {
                             "type": "object",
                             "properties": {
@@ -4634,7 +5212,7 @@
             "ModelNotFoundException": {
                 "description": "Not found",
                 "content": {
-                    "application\/json": {
+                    "application/json": {
                         "schema": {
                             "type": "object",
                             "properties": {

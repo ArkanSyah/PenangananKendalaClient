@@ -28,6 +28,47 @@ Acceptance Criteria ini mencakup:
 - Then sistem harus menyimpan catatan log dan mengaitkannya dengan ticket yang benar
 - Acceptance: jumlah `progressLogs` sesuai, dan `notes` dari log pertama sesuai dengan data yang dikirim
 
+### AC-UT-03: User role helpers dan relasi penugasan tiket
+- Given sebuah user dengan role tertentu (misal admin atau project_manager)
+- When method helper `hasRole()` atau `hasAnyRole()` dipanggil
+- Then method mengembalikan nilai boolean sesuai role pengguna
+- Acceptance:
+  - `hasRole('admin')` bernilai true untuk user ber-role admin dan false untuk role lain
+  - `hasAnyRole(['project_manager', 'admin'])` bernilai true untuk PM dan false untuk programmer/client
+  - Relasi `createdTickets`, `pmAssignments`, dan `programmerAssignments` terhubung ke instance Eloquent yang tepat
+
+### AC-UT-04: Model NotificationPreference dan casting tipe boolean
+- Given preferensi notifikasi dibuat untuk user tertentu dengan integer 0 atau 1
+- When record di-retrieve melalui Eloquent
+- Then atribut channel notifikasi di-cast otomatis menjadi boolean
+- Acceptance:
+  - `in_app_enabled`, `wa_enabled`, dan `quiet_hours_enabled` ber-tipe data boolean
+  - Relasi `user` mengembalikan instance `App\Models\User` yang sesuai
+
+### AC-UT-05: Model ProgressLog relasi dan internal flag
+- Given catatan progres dibuat untuk sebuah tiket
+- When atribut `is_internal` diisi dengan angka 1 atau 0
+- Then Eloquent me-return atribut tersebut sebagai boolean murni
+- Acceptance:
+  - `log->is_internal` bernilai boolean `true`/`false`
+  - `log->ticket` mengacu ke model Ticket yang sesuai dan `log->user` mengacu ke pengguna pembuat log
+
+### AC-UT-06: Model AdminActivityLog mencatat audit admin
+- Given admin melakukan tindakan administratif seperti toggle aktif atau reset password
+- When log audit disimpan di tabel `admin_activity_logs`
+- Then data detail tersimpan sebagai JSON dan di-cast menjadi array
+- Acceptance:
+  - `log->admin` dan `log->targetUser` terhubung ke model User yang benar
+  - `log->details` bertipe array
+
+### AC-UT-07: Integritas model NotificationHold dan NotificationLog
+- Given antrian notifikasi ditahan (*held*) karena jam tenang (*quiet hours*)
+- When record disimpan di tabel `notification_holds` dan `notification_logs`
+- Then relasi batch dan recipient terhubung secara valid
+- Acceptance:
+  - `hold->recipient` terhubung ke User dan `hold->batch` terhubung ke NotificationBatch
+  - `log->recipient` terhubung ke User dengan field `channel`, `message`, dan `status` valid
+
 ---
 
 ## 3. Acceptance Criteria untuk Integration Testing
@@ -220,6 +261,86 @@ Acceptance Criteria ini mencakup:
   - Programmer dapat melihat ticket yang tersedia
   - PM dapat approve claim dan status berubah menjadi `assigned`
   - `ticket_assignments` dibuat dengan `ticket_id`, `programmer_id`, dan `pm_id`
+
+### AC-INT-23: Service Desk dapat membuat tiket walk-in untuk klien non-sistem
+- Given Service Desk menerima laporan kendala langsung via telepon/WhatsApp/tatap muka
+- When request `POST /api/tickets/walk-in` dikirim dengan data pelapor (`reporter_name`, `contact_method`, dll)
+- Then tiket langsung berstatus `open` tanpa perlu konfirmasi tambahan
+- Acceptance:
+  - Status respons 201 Created
+  - Atribut `reporter_name`, `contact_method`, dan `reporter_contact` tersimpan
+  - Otomatis mencatat audit log internal berlabel `[WALK_IN]` di `progress_logs`
+  - Role non-Service Desk (programmer/client) yang mencoba membuat walk-in ditolak dengan status 403
+
+### AC-INT-24: Owner dan Admin dapat memindahkan status tiket via Kanban Board
+- Given tiket dalam status apa pun dan user login sebagai `admin` atau `owner`
+- When request `PATCH /api/board/move` dikirim dengan `ticket_id` dan `new_status` valid
+- Then status tiket diperbarui dan tercatat di audit log internal
+- Acceptance:
+  - Status respons 200 OK
+  - Jika status tujuan sama dengan status saat ini, mengembalikan pesan tanpa duplikasi log
+  - Status tiket di tabel `tickets` berubah sesuai `new_status`
+  - Role lain (programmer, service_desk, client) ditolak dengan status 403
+
+### AC-INT-25: PM dapat memperbarui prioritas tiket aktif
+- Given tiket berstatus aktif (bukan closed atau rejected) dan user ber-role `project_manager`
+- When request `POST /api/tickets/{id}/priority` dikirim dengan nilai prioritas valid (`low`, `medium`, `high`, `belum_ditentukan`)
+- Then prioritas tiket diperbarui di database
+- Acceptance:
+  - Status respons 200 OK
+  - Kolom `tickets.priority` diperbarui sesuai nilai baru
+  - Upaya mengubah prioritas pada tiket yang sudah `closed` atau `rejected` ditolak dengan status 422
+  - Role non-PM ditolak dengan status 403
+
+### AC-INT-26: Pengguna dapat mengelola notifikasi dan melihat preview digest
+- Given user terautentikasi dalam sistem
+- When mengakses endpoint preferensi, log notifikasi, dan preview digest
+- Then sistem mengembalikan konfigurasi dan ringkasan notifikasi pengguna
+- Acceptance:
+  - `GET /api/notification/preferences` mengembalikan status 200 dengan nilai default
+  - `PUT /api/notification/preferences` memperbarui quiet hours, digest mode, dan channel flags
+  - `GET /api/notifications/in-app` mengembalikan daftar notifikasi beserta `unread_count`
+  - `POST /api/notifications/in-app/{id}/read` menandai notifikasi telah dibaca
+  - `GET /api/notification/preview-digest?period=daily` menghasilkan template preview digest yang valid
+
+### AC-INT-27: Sistem mendukung endpoint integrasi PWA dan Web Push
+- Given sistem client PWA memerlukan handshake dan subscription
+- When memanggil endpoint PWA publik dan terproteksi
+- Then sistem memfasilitasi integrasi Web Push dengan aman
+- Acceptance:
+  - `GET /api/health` mengembalikan status 200 dengan metadata `pwa_ready: true` dan `database_connected: true`
+  - `GET /api/vapid-public-key` mengembalikan public VAPID key tanpa membocorkan private key
+  - `POST /api/push-subscriptions` menyimpan endpoint subscription browser user (status 201/200 tanpa duplikasi)
+  - Penghapusan user otomatis men-cascade hapus seluruh record push subscription miliknya
+
+### AC-INT-28: Sistem menyediakan portal dokumentasi interaktif Swagger UI
+- Given pengembang atau penguji memerlukan dokumentasi API standar industri
+- When mengakses rute `/swagger`, `/api/documentation`, atau `/swagger.json`
+- Then antarmuka Swagger UI dan spesifikasi OpenAPI 3.1 ditampilkan secara interaktif
+- Acceptance:
+  - Status 200 OK pada route `/swagger` dan `/api/documentation`
+  - Menampilkan antarmuka Swagger UI v5 dengan tombol Authorize Bearer Token
+  - Route `/swagger.json` menyajikan dokumen OpenAPI 3.1 JSON yang valid
+
+### AC-INT-29: Owner dan Admin dapat melakukan soft-delete dan melihat arsip tiket
+- Given tiket aktif dan user ber-role eksekutif (`owner` atau `admin`)
+- When mengirim request `DELETE /api/tickets/{ticket}`
+- Then tiket di-soft-delete dan tercatat di tabel `archived_tickets`
+- Acceptance:
+  - Status respons 200 OK
+  - Tiket tidak muncul lagi di antrian tiket aktif (`deleted_at` terisi)
+  - `GET /api/tickets/archived` mengembalikan seluruh daftar tiket yang diarsipkan bagi Owner/Admin
+  - Role non-eksekutif (PM, programmer, client) ditolak dengan status 403
+
+### AC-INT-30: Owner dan Admin dapat mengedit judul tiket secara langsung
+- Given tiket yang sudah ada dan user login sebagai `owner` atau `admin`
+- When mengirim request `PATCH /api/tickets/{ticket}/title` dengan judul baru
+- Then judul tiket diperbarui tanpa mereset alur status penanganan
+- Acceptance:
+  - Status respons 200 OK
+  - Kolom `tickets.title` berubah sesuai judul baru
+  - Perubahan judul tercatat di progress log internal
+  - Role non-eksekutif ditolak dengan status 403
 
 ---
 
