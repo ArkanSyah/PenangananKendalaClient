@@ -1284,10 +1284,10 @@ export const TicketDetail = () => {
 
           {/* Empty Actions Block */}
           {(!user ||
-            (user.role === 'programmer' && (!isAssignedProgrammer || !['assigned','in_progress','pending_review'].includes(ticket.status))) ||
-            (user.role === 'service_desk' && !['resolved','open','pending_confirmation'].includes(ticket.status)) ||
-            (user.role === 'project_manager' && !['escalated_to_pm','pending_review'].includes(ticket.status) && ['closed','rejected'].includes(ticket.status)) ||
-            (user.role === 'owner' && ticket.status !== 'escalated_to_owner') ||
+            (user?.role === 'programmer' && (!isAssignedProgrammer || !['assigned','in_progress','pending_review'].includes(ticket.status))) ||
+            (user?.role === 'service_desk' && !['resolved','open','pending_confirmation'].includes(ticket.status)) ||
+            (user?.role === 'project_manager' && !['escalated_to_pm','pending_review'].includes(ticket.status) && ['closed','rejected'].includes(ticket.status)) ||
+            (user?.role === 'owner' && ticket.status !== 'escalated_to_owner') ||
             (ticket.status === 'closed' || ticket.status === 'rejected')
           ) && (
             <div className="bg-slate-50 border border-slate-200 rounded-lg p-4 text-center text-slate-400 text-xs flex items-center justify-center gap-1.5">
