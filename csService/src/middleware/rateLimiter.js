@@ -25,8 +25,10 @@ class RateLimiter {
       const sessionId = req.body?.sessionId || req.params?.sessionId || req.query?.sessionId || 'anonymous';
 
       // 1. Cek Burst Rate (Mencegah flooding otomatis sekejap)
+      // Hanya terapkan burst limit jika memiliki sesi aktif atau request POST
+      const isBurstGuarded = sessionId !== 'anonymous' || req.method === 'POST';
       const lastSessionTime = this.sessionLastTime.get(sessionId) || 0;
-      if (now - lastSessionTime < this.minBurstIntervalMs) {
+      if (isBurstGuarded && (now - lastSessionTime < this.minBurstIntervalMs)) {
         securityLogger.logEvent({
           eventType: 'BURST_FLOOD_DETECTED',
           severity: 'WARN',
@@ -43,21 +45,23 @@ class RateLimiter {
       }
 
       // 2. Cek Rate Limit per Sesi (15 request / menit)
-      const sessionHistory = this.getCleanedHistory(this.sessionLimits, sessionId, now);
-      if (sessionHistory.length >= this.maxSessionPerMinute) {
-        securityLogger.logEvent({
-          eventType: 'SESSION_RATE_LIMIT_EXCEEDED',
-          severity: 'WARN',
-          ip,
-          sessionId,
-          details: { count: sessionHistory.length, limit: this.maxSessionPerMinute }
-        });
-        res.setHeader('Retry-After', '60');
-        return res.status(429).json({
-          status: 'error',
-          code: 'SESSION_RATE_LIMIT_EXCEEDED',
-          error: 'Batas pesan sesi tercapai (maksimal 15 pesan/menit). Mohon tunggu 1 menit.'
-        });
+      if (sessionId !== 'anonymous') {
+        const sessionHistory = this.getCleanedHistory(this.sessionLimits, sessionId, now);
+        if (sessionHistory.length >= this.maxSessionPerMinute) {
+          securityLogger.logEvent({
+            eventType: 'SESSION_RATE_LIMIT_EXCEEDED',
+            severity: 'WARN',
+            ip,
+            sessionId,
+            details: { count: sessionHistory.length, limit: this.maxSessionPerMinute }
+          });
+          res.setHeader('Retry-After', '60');
+          return res.status(429).json({
+            status: 'error',
+            code: 'SESSION_RATE_LIMIT_EXCEEDED',
+            error: 'Batas pesan sesi tercapai (maksimal 15 pesan/menit). Mohon tunggu 1 menit.'
+          });
+        }
       }
 
       // 3. Cek Rate Limit per IP (30 request / menit)
@@ -79,9 +83,12 @@ class RateLimiter {
       }
 
       // Catat request yang lolos
-      sessionHistory.push(now);
-      this.sessionLimits.set(sessionId, sessionHistory);
-      this.sessionLastTime.set(sessionId, now);
+      if (sessionId !== 'anonymous') {
+        const sessionHistory = this.getCleanedHistory(this.sessionLimits, sessionId, now);
+        sessionHistory.push(now);
+        this.sessionLimits.set(sessionId, sessionHistory);
+        this.sessionLastTime.set(sessionId, now);
+      }
 
       ipHistory.push(now);
       this.ipLimits.set(ip, ipHistory);

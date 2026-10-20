@@ -326,14 +326,16 @@ export function CustomerServiceWidget() {
               type="text"
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              placeholder="Tanya kendala, produk, resi..."
+              placeholder="Tanya kendala IT, lacak tiket kendala..."
               className="flex-1 text-xs bg-slate-100 focus:bg-white border border-transparent focus:border-blue-500 focus:ring-2 focus:ring-blue-100 rounded-xl px-3.5 py-2 outline-none transition"
               disabled={isSending}
+              aria-label="Input pesan CS"
             />
             <button
               type="submit"
               disabled={!input.trim() || isSending}
               className="w-8 h-8 rounded-full bg-blue-600 hover:bg-blue-700 disabled:bg-slate-200 text-white flex items-center justify-center transition focus:outline-none"
+              aria-label="Kirim Pesan CS"
             >
               <Send className="w-3.5 h-3.5" />
             </button>

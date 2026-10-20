@@ -43,5 +43,12 @@ export default defineConfig({
       reuseExistingServer: true,
       timeout: 30000,
     },
+    {
+      command: 'node src/server.js',
+      cwd: '../csService',
+      url: 'http://127.0.0.1:3001/api/health',
+      reuseExistingServer: true,
+      timeout: 30000,
+    },
   ],
 });
