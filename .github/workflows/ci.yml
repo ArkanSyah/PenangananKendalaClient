@@ -84,6 +84,13 @@ jobs:
       - name: Build Production Assets (Vite)
         run: npm run build
 
+      - name: Run csService Unit & E2E API Tests
+        working-directory: csService
+        run: |
+          cp .env.example .env || true
+          npm ci
+          npm test
+
   e2e-ci:
     name: End-to-End Tests (Playwright)
     runs-on: ubuntu-latest
@@ -127,11 +134,19 @@ jobs:
         with:
           node-version: 20
           cache: 'npm'
-          cache-dependency-path: webPenangananKendalaClientFE/package-lock.json
+          cache-dependency-path: |
+            webPenangananKendalaClientFE/package-lock.json
+            csService/package-lock.json
 
-      - name: Install NPM dependencies
+      - name: Install Frontend NPM dependencies
         working-directory: webPenangananKendalaClientFE
         run: npm ci
+
+      - name: Prepare csService (AI Microservice)
+        working-directory: csService
+        run: |
+          cp .env.example .env || true
+          npm ci
 
       - name: Install Playwright Browsers & OS Dependencies
         working-directory: webPenangananKendalaClientFE
