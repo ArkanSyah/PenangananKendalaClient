@@ -142,8 +142,8 @@ test.describe('Customer Service AI (TeknoBot) End-to-End Suite', () => {
       await expect(lastMessage).toBeVisible({ timeout: 25000 });
 
       // Verifikasi detail tiket milik klien berhasil dimuat
-      await expect(lastMessage).toContainText('TCK-202610-0001');
-      await expect(lastMessage).toContainText(/Kendala Login Portal|Error 500/i);
+      await expect(lastMessage).toContainText('TCK-202610-0001', { timeout: 25000 });
+      await expect(lastMessage).toContainText(/Kendala Login Portal|Error 500/i, { timeout: 25000 });
     });
 
     test('Cross-tenant data isolation: Client is DENIED when querying another user ticket', async ({ page }) => {

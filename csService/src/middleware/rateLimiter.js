@@ -6,9 +6,9 @@ class RateLimiter {
     this.sessionLimits = new Map();  // sessionId -> Array<timestamp>
     this.sessionLastTime = new Map();// sessionId -> lastRequestTimestamp
 
-    this.maxIpPerMinute = 30;
-    this.maxSessionPerMinute = 15;
-    this.minBurstIntervalMs = 500;   // Minimal jarak antar request per sesi 500ms
+    this.maxIpPerMinute = parseInt(process.env.RATE_LIMIT_IP_MAX) || 30;
+    this.maxSessionPerMinute = parseInt(process.env.RATE_LIMIT_SESSION_MAX) || 15;
+    this.minBurstIntervalMs = parseInt(process.env.RATE_LIMIT_BURST_MS) || 500;   // Minimal jarak antar request per sesi 500ms
     this.windowMs = 60 * 1000;
   }
 
@@ -23,6 +23,13 @@ class RateLimiter {
       const now = Date.now();
       const ip = req.headers['x-forwarded-for']?.split(',')[0]?.trim() || req.socket.remoteAddress || '127.0.0.1';
       const sessionId = req.body?.sessionId || req.params?.sessionId || req.query?.sessionId || 'anonymous';
+
+      // Hanya request pengiriman chat (POST) yang dihitung dalam pembatasan kuota pesan
+      // Request pembacaan data (GET /history, GET /health, GET /faq) tidak memotong kuota chat
+      const isChatAction = !req.method || req.method === 'POST';
+      if (!isChatAction) {
+        return next();
+      }
 
       // 1. Cek Burst Rate (Mencegah flooding otomatis sekejap)
       // Hanya terapkan burst limit jika memiliki sesi aktif atau request POST

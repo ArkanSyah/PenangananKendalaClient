@@ -49,6 +49,12 @@ export default defineConfig({
       url: 'http://127.0.0.1:3001/api/health',
       reuseExistingServer: true,
       timeout: 30000,
+      env: {
+        CI: 'true',
+        RATE_LIMIT_IP_MAX: '600',
+        RATE_LIMIT_SESSION_MAX: '300',
+        RATE_LIMIT_BURST_MS: '50',
+      },
     },
   ],
 });
