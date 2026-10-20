@@ -1,0 +1,165 @@
+{
+  "toko": {
+    "nama": "TeknoSolusi Store & Client Support",
+    "deskripsi": "Sistem Penanganan Kendala Client, penyedia perangkat IT, lisensi, serta layanan maintenance software dan hardware.",
+    "jam_operasional": "Senin - Sabtu: 08:30 - 21:00 WIB, Minggu: 10:00 - 17:00 WIB",
+    "kontak": {
+      "whatsapp": "+62 812-3456-7890",
+      "email": "support@teknosolusi.co.id",
+      "alamat": "Jl. Gatot Subroto No. 45, Jakarta Selatan"
+    }
+  },
+  "produk": [
+    {
+      "id": "PRD-001",
+      "nama": "Laptop ThinkPad L14 Gen 4",
+      "kategori": "Laptop Bisnis",
+      "harga": 12500000,
+      "stok": 8,
+      "garansi": "3 Tahun Resmi Lenovo Premier Support",
+      "spesifikasi": "Intel Core i5-1335U, RAM 16GB DDR4, SSD 512GB NVMe, Layar 14\" FHD IPS, Windows 11 Pro",
+      "status": "Tersedia"
+    },
+    {
+      "id": "PRD-002",
+      "nama": "Monitor Dell UltraSharp U2422H",
+      "kategori": "Monitor",
+      "harga": 4200000,
+      "stok": 15,
+      "garansi": "3 Tahun Advanced Exchange",
+      "spesifikasi": "23.8 inch Full HD (1920x1080), IPS, 100% sRGB, Bezel-less, USB-C Hub, HDMI, DP",
+      "status": "Tersedia"
+    },
+    {
+      "id": "PRD-003",
+      "nama": "Mechanical Keyboard Keychron K2 V2 Wireless",
+      "kategori": "Aksesoris",
+      "harga": 1350000,
+      "stok": 20,
+      "garansi": "1 Tahun Resmi",
+      "spesifikasi": "75% Layout, Gateron Brown Switch, Bluetooth 5.1 & Type-C, RGB Backlight, Mac/Windows layout",
+      "status": "Tersedia"
+    },
+    {
+      "id": "PRD-004",
+      "nama": "Mouse Logitech MX Master 3S",
+      "kategori": "Aksesoris",
+      "harga": 1650000,
+      "stok": 12,
+      "garansi": "1 Tahun Resmi",
+      "spesifikasi": "8K DPI Any-surface Tracking, Quiet Clicks, MagSpeed Scroll, Bluetooth & Logi Bolt",
+      "status": "Tersedia"
+    },
+    {
+      "id": "PRD-005",
+      "nama": "Paket Maintenance & Troubleshooting IT Client (Tahunan)",
+      "kategori": "Jasa Layanan",
+      "harga": 6000000,
+      "stok": 999,
+      "garansi": "SLA Response 1 Jam",
+      "spesifikasi": "Maintenance berkala software/hardware, remote support via AnyDesk/TeamViewer, on-site visit 2x/bulan",
+      "status": "Tersedia"
+    }
+  ],
+  "transaksi_pesanan": [
+    {
+      "order_id": "ORD-2026-001",
+      "nama_pelanggan": "Budi Santoso",
+      "tanggal": "2026-10-18",
+      "item": [
+        {
+          "produk_id": "PRD-001",
+          "nama": "Laptop ThinkPad L14 Gen 4",
+          "jumlah": 1,
+          "harga": 12500000
+        }
+      ],
+      "total_bayar": 12500000,
+      "metode_pembayaran": "Transfer Bank BCA",
+      "status_pesanan": "Sedang Dikirim",
+      "kurir": "JNE Express",
+      "nomor_resi": "JNE992831827ID",
+      "estimasi_tiba": "2026-10-21"
+    },
+    {
+      "order_id": "ORD-2026-002",
+      "nama_pelanggan": "Siti Rahma",
+      "tanggal": "2026-10-19",
+      "item": [
+        {
+          "produk_id": "PRD-004",
+          "nama": "Mouse Logitech MX Master 3S",
+          "jumlah": 1,
+          "harga": 1650000
+        }
+      ],
+      "total_bayar": 1650000,
+      "metode_pembayaran": "QRIS",
+      "status_pesanan": "Dalam Proses Packing",
+      "kurir": "SiCepat REG",
+      "nomor_resi": "004928371928",
+      "estimasi_tiba": "2026-10-22"
+    },
+    {
+      "order_id": "ORD-2026-003",
+      "nama_pelanggan": "Ahmad Fauzi",
+      "tanggal": "2026-10-15",
+      "item": [
+        {
+          "produk_id": "PRD-002",
+          "nama": "Monitor Dell UltraSharp U2422H",
+          "jumlah": 2,
+          "harga": 4200000
+        }
+      ],
+      "total_bayar": 8400000,
+      "metode_pembayaran": "Mandiri Virtual Account",
+      "status_pesanan": "Selesai Diterima",
+      "kurir": "J&T Cargo",
+      "nomor_resi": "JT8827102941",
+      "estimasi_tiba": "2026-10-17"
+    },
+    {
+      "order_id": "ORD-2026-004",
+      "nama_pelanggan": "Dian Pratama",
+      "tanggal": "2026-10-19",
+      "item": [
+        {
+          "produk_id": "PRD-003",
+          "nama": "Mechanical Keyboard Keychron K2 V2 Wireless",
+          "jumlah": 1,
+          "harga": 1350000
+        }
+      ],
+      "total_bayar": 1350000,
+      "metode_pembayaran": "COD (Bayar di Tempat)",
+      "status_pesanan": "Menunggu Konfirmasi Alamat",
+      "kurir": "Anteraja",
+      "nomor_resi": "Menunggu Resi",
+      "estimasi_tiba": "2026-10-23"
+    }
+  ],
+  "promo_voucher": [
+    {
+      "kode": "TEKNOHEMAT10",
+      "diskon": "10% (Maksimal Rp 100.000)",
+      "minimal_pembelian": 500000,
+      "berlaku_sampai": "2026-10-31",
+      "keterangan": "Berlaku untuk semua aksesoris & peripheral"
+    },
+    {
+      "kode": "GRATISONGKIR",
+      "diskon": "Subsidi Ongkir hingga Rp 30.000",
+      "minimal_pembelian": 300000,
+      "berlaku_sampai": "2026-12-31",
+      "keterangan": "Berlaku untuk pengiriman pulau Jawa & Bali"
+    }
+  ],
+  "metode_pembayaran": [
+    "BCA Virtual Account",
+    "Mandiri Virtual Account",
+    "QRIS (Gopay, OVO, Dana, ShopeePay, LinkAja)",
+    "Transfer Manual Bank BCA (Rek: 827-109-2811 a.n PT Tekno Solusi Mandiri)",
+    "COD (Khusus wilayah Jabodetabek)"
+  ]
+}

@@ -1,0 +1,37 @@
+[
+  {
+    "kategori": "Pemesanan & Pembayaran",
+    "pertanyaan": "Bagaimana cara melakukan pemesanan di TeknoSolusi?",
+    "jawaban": "Pemesanan dapat dilakukan langsung melalui katalog website, chat CS via widget ini, atau melalui WhatsApp resmi kami di +62 812-3456-7890. Pilih produk, tentukan jumlah, dan pilih metode pembayaran yang diinginkan."
+  },
+  {
+    "kategori": "Pemesanan & Pembayaran",
+    "pertanyaan": "Apakah bisa bayar di tempat (COD)?",
+    "jawaban": "Ya, kami melayani sistem COD (Cash on Delivery) khusus untuk area Jabodetabek dengan nominal belanja maksimal Rp 3.000.000."
+  },
+  {
+    "kategori": "Pengiriman & Tracking",
+    "pertanyaan": "Berapa lama estimasi pengiriman barang?",
+    "jawaban": "Untuk wilayah Jabodetabek estimasi 1-2 hari kerja. Untuk luar Jabodetabek (pulau Jawa) 2-3 hari kerja, dan luar pulau Jawa 3-5 hari kerja tergantung ekspedisi (JNE, SiCepat, Anteraja, atau J&T)."
+  },
+  {
+    "kategori": "Pengiriman & Tracking",
+    "pertanyaan": "Bagaimana cara mengecek status pesanan dan nomor resi saya?",
+    "jawaban": "Cukup berikan Order ID (misal: ORD-2026-001) atau nama pemesan kepada CS kami di chat ini, sistem kami akan langsung melacak status terkini beserta nomor resi pengiriman Anda."
+  },
+  {
+    "kategori": "Garansi & Retur",
+    "pertanyaan": "Bagaimana syarat dan ketentuan klaim garansi atau pengembalian produk (retur)?",
+    "jawaban": "Kami memberikan jaminan retur ganti baru dalam waktu 7x24 jam sejak barang diterima jika terdapat cacat pabrik, dengan syarat menyertakan video unboxing utuh tanpa jeda dan kelengkapan box masih utuh. Setelah 7 hari, klaim garansi resmi berlaku sesuai masa garansi masing-masing produk (Lenovo 3 tahun, Dell 3 tahun, aksesoris 1 tahun)."
+  },
+  {
+    "kategori": "Layanan IT & Kendala",
+    "pertanyaan": "Apakah TeknoSolusi melayani perbaikan dan penanganan kendala software/hardware?",
+    "jawaban": "Ya! Kami memiliki paket 'Maintenance & Troubleshooting IT Client' yang menangani instalasi OS, optimasi jaringan, setup database, perbaikan bug software, hingga konsultasi hardware berkala baik secara remote maupun on-site."
+  },
+  {
+    "kategori": "Jam Operasional",
+    "pertanyaan": "Kapan jam operasional pelayanan Customer Service?",
+    "jawaban": "Layanan CS aktif Senin - Sabtu pukul 08:30 - 21:00 WIB, dan Minggu pukul 10:00 - 17:00 WIB. Chatbot AI kami siap melayani dan menjawab pertanyaan Anda 24/7!"
+  }
+]

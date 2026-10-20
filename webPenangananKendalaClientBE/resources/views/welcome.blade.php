@@ -273,5 +273,12 @@
         @if (Route::has('login'))
             <div class="h-14.5 hidden lg:block"></div>
         @endif
+
+        <!-- Customer Service AI Widget (9router / Node.js Microservice) -->
+        <link rel="stylesheet" href="http://localhost:3001/widget.css">
+        <script>
+            window.CS_API_BASE = 'http://localhost:3001';
+        </script>
+        <script src="http://localhost:3001/widget.js"></script>
     </body>
 </html>
