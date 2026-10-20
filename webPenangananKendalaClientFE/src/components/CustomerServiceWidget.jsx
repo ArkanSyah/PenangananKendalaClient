@@ -46,7 +46,7 @@ export function CustomerServiceWidget() {
         setMessages([
           {
             role: 'assistant',
-            content: 'Halo! 👋 Selamat datang di **Sistem Penanganan Kendala Client**.\n\nSaya **TeknoBot**, asisten CS AI Anda. Ada yang bisa saya bantu seputar kendala tiket, tracking nomor resi, katalog produk IT, atau panduan teknis?',
+            content: 'Halo! 👋 Selamat datang di **Sistem Penanganan Kendala Client**.\n\nSaya **TeknoBot**, asisten CS & Helpdesk AI. Ada kendala IT yang bisa saya bantu cek (misal status tiket kendala, panduan penanganan error 500, akun login terkunci, atau eskalasi ke Service Desk)?',
             timestamp: new Date().toISOString()
           }
         ]);
@@ -55,7 +55,7 @@ export function CustomerServiceWidget() {
       setMessages([
         {
           role: 'assistant',
-          content: 'Halo! 👋 Selamat datang di **Sistem Penanganan Kendala Client**.\n\nSaya **TeknoBot**, asisten CS AI Anda. Ada yang bisa saya bantu seputar kendala tiket, tracking nomor resi, katalog produk IT, atau panduan teknis?',
+          content: 'Halo! 👋 Selamat datang di **Sistem Penanganan Kendala Client**.\n\nSaya **TeknoBot**, asisten CS & Helpdesk AI. Ada kendala IT yang bisa saya bantu cek (misal status tiket kendala, panduan penanganan error 500, akun login terkunci, atau eskalasi ke Service Desk)?',
           timestamp: new Date().toISOString()
         }
       ]);
@@ -268,28 +268,28 @@ export function CustomerServiceWidget() {
             {messages.length === 1 && !isSending && (
               <div className="flex flex-wrap gap-1.5 pt-1">
                 <button
-                  onClick={() => handleSend('Cek status pesanan ORD-2026-001')}
+                  onClick={() => handleSend('Cek status tiket TCK-202610-0001')}
                   className="bg-white hover:bg-blue-50 border border-slate-200 hover:border-blue-300 text-slate-700 text-[11px] px-2.5 py-1.5 rounded-full transition flex items-center gap-1 text-left"
                 >
-                  📦 Resi ORD-2026-001
+                  🎫 Cek Tiket TCK-202610-0001
                 </button>
                 <button
-                  onClick={() => handleSend('Apa saja katalog laptop dan monitor yang ready?')}
+                  onClick={() => handleSend('Apa solusi awal jika muncul Error 500 pada portal klien?')}
                   className="bg-white hover:bg-blue-50 border border-slate-200 hover:border-blue-300 text-slate-700 text-[11px] px-2.5 py-1.5 rounded-full transition flex items-center gap-1 text-left"
                 >
-                  💻 Rekomendasi Laptop
+                  🚨 Panduan Error 500
                 </button>
                 <button
-                  onClick={() => handleSend('Ada voucher promo yang sedang aktif?')}
+                  onClick={() => handleSend('Bagaimana alur status tiket dari Pending hingga Resolved?')}
                   className="bg-white hover:bg-blue-50 border border-slate-200 hover:border-blue-300 text-slate-700 text-[11px] px-2.5 py-1.5 rounded-full transition flex items-center gap-1 text-left"
                 >
-                  🎟️ Promo & Diskon
+                  ⏱️ Alur Status & SLA
                 </button>
                 <button
-                  onClick={() => handleSend('Bagaimana syarat retur dan garansi produk?')}
+                  onClick={() => handleSend('Bagaimana jika akun klien terkunci karena salah password?')}
                   className="bg-white hover:bg-blue-50 border border-slate-200 hover:border-blue-300 text-slate-700 text-[11px] px-2.5 py-1.5 rounded-full transition flex items-center gap-1 text-left"
                 >
-                  🛡️ Garansi & Retur
+                  🔑 Akun Login Terkunci
                 </button>
               </div>
             )}

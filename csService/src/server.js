@@ -44,6 +44,6 @@ app.listen(config.port, () => {
   console.log(`🔌 API Base URL     : http://localhost:${config.port}/api`);
   console.log(`🤖 AI Model         : ${config.ai.model}`);
   console.log(`⚡ Proxy Endpoint   : ${config.ai.baseUrl}`);
-  console.log(`📁 Knowledge Base   : ${config.paths.sales}`);
+  console.log(`📁 Knowledge Base   : ${config.paths.tickets}`);
   console.log(`====================================================`);
 });

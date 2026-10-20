@@ -17,8 +17,8 @@ router.get('/health', async (req, res) => {
         hasApiKey: !!config.ai.apiKey
       },
       knowledgeBase: {
-        totalProducts: knowledgeService.getProducts().length,
-        totalOrders: knowledgeService.getOrders().length,
+        totalTickets: knowledgeService.getTickets().length,
+        totalCategories: knowledgeService.getCategories().length,
         totalFaqs: knowledgeService.getFaqs().length,
       }
     });
@@ -27,7 +27,7 @@ router.get('/health', async (req, res) => {
   }
 });
 
-// 2. Daftar FAQ
+// 2. Daftar FAQ Helpdesk
 router.get('/faq', (req, res) => {
   res.json({
     status: 'success',
@@ -35,15 +35,23 @@ router.get('/faq', (req, res) => {
   });
 });
 
-// 3. Daftar Katalog Produk
-router.get('/products', (req, res) => {
+// 3. Daftar Tiket Terdaftar
+router.get('/tickets', (req, res) => {
   res.json({
     status: 'success',
-    data: knowledgeService.getProducts()
+    data: knowledgeService.getTickets()
   });
 });
 
-// 4. Endpoint Utama Chat (Mendukung Streaming SSE & JSON Biasa)
+// 4. Daftar Kategori Kendala
+router.get('/categories', (req, res) => {
+  res.json({
+    status: 'success',
+    data: knowledgeService.getCategories()
+  });
+});
+
+// 5. Endpoint Utama Chat (Mendukung Streaming SSE & JSON Biasa)
 router.post('/chat', async (req, res) => {
   const { sessionId, message, stream = true } = req.body;
 
@@ -96,7 +104,7 @@ router.post('/chat', async (req, res) => {
   }
 });
 
-// 5. Riwayat Chat per Sesi
+// 6. Riwayat Chat per Sesi
 router.get('/history/:sessionId', (req, res) => {
   const history = chatService.getHistory(req.params.sessionId);
   res.json({
@@ -106,7 +114,7 @@ router.get('/history/:sessionId', (req, res) => {
   });
 });
 
-// 6. Reset Sesi Percakapan
+// 7. Reset Sesi Percakapan
 router.post('/reset/:sessionId', (req, res) => {
   const success = chatService.resetSession(req.params.sessionId);
   res.json({

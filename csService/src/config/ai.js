@@ -17,7 +17,7 @@ export const config = {
     model: process.env.AI_MODEL || 'ag/gemini-3.8-flash-high',
   },
   paths: {
-    sales: path.resolve(projectRoot, process.env.KNOWLEDGE_SALES_PATH || './data/data_penjualan.json'),
+    tickets: path.resolve(projectRoot, process.env.KNOWLEDGE_TICKETS_PATH || './data/data_kendala_client.json'),
     faq: path.resolve(projectRoot, process.env.KNOWLEDGE_FAQ_PATH || './data/faq.json'),
     sessions: path.resolve(projectRoot, process.env.SESSIONS_PATH || './data/sessions.json'),
   }

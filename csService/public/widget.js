@@ -46,13 +46,13 @@
         <div class="cs-msg assistant">
           <div class="cs-bubble">
             <p>Halo! 👋 Selamat datang di <strong>Sistem Penanganan Kendala Client</strong>.</p>
-            <p>Saya <strong>TeknoBot</strong>, asisten CS AI Anda. Ada yang bisa saya bantu seputar tiket kendala, status pesanan/resi, katalog produk IT, atau panduan teknis?</p>
+            <p>Saya <strong>TeknoBot</strong>, asisten CS & Helpdesk AI. Ada kendala IT yang bisa saya bantu cek (misal status tiket, panduan error 500, akun login terkunci, atau eskalasi ke Service Desk)?</p>
             
             <div class="cs-quick-chips">
-              <div class="cs-chip" data-msg="Cek status pesanan ORD-2026-001">📦 Cek Resi ORD-2026-001</div>
-              <div class="cs-chip" data-msg="Apa saja katalog laptop dan monitor yang ready?">💻 Rekomendasi Laptop & IT</div>
-              <div class="cs-chip" data-msg="Ada voucher promo yang sedang aktif?">🎟️ Info Promo & Voucher</div>
-              <div class="cs-chip" data-msg="Bagaimana syarat retur dan garansi produk?">🛡️ Garansi & Retur</div>
+              <div class="cs-chip" data-msg="Cek status tiket TCK-202610-0001">🎫 Cek Tiket TCK-202610-0001</div>
+              <div class="cs-chip" data-msg="Apa solusi awal jika muncul Error 500 pada portal klien?">🚨 Panduan Error 500</div>
+              <div class="cs-chip" data-msg="Bagaimana alur status tiket dari Pending hingga Resolved?">⏱️ Alur Status & SLA</div>
+              <div class="cs-chip" data-msg="Bagaimana jika akun klien terkunci karena salah password?">🔑 Akun Login Terkunci</div>
             </div>
           </div>
           <span class="cs-msg-time">${formatTime(new Date())}</span>

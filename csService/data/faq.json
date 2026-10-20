@@ -1,37 +1,37 @@
 [
   {
-    "kategori": "Pemesanan & Pembayaran",
-    "pertanyaan": "Bagaimana cara melakukan pemesanan di TeknoSolusi?",
-    "jawaban": "Pemesanan dapat dilakukan langsung melalui katalog website, chat CS via widget ini, atau melalui WhatsApp resmi kami di +62 812-3456-7890. Pilih produk, tentukan jumlah, dan pilih metode pembayaran yang diinginkan."
+    "kategori": "Pembuatan & Pelaporan Tiket",
+    "pertanyaan": "Bagaimana cara membuat tiket kendala baru di sistem?",
+    "jawaban": "Klien dapat membuat tiket baru melalui menu 'Create Ticket' pada portal web ini dengan mengisi Judul, Deskripsi kendala, Kategori (Software, Hardware, Jaringan, atau Akun), serta Prioritas. Untuk pelaporan langsung darurat di kantor, staf Service Desk dapat membuatkan 'Walk-in Ticket'."
   },
   {
-    "kategori": "Pemesanan & Pembayaran",
-    "pertanyaan": "Apakah bisa bayar di tempat (COD)?",
-    "jawaban": "Ya, kami melayani sistem COD (Cash on Delivery) khusus untuk area Jabodetabek dengan nominal belanja maksimal Rp 3.000.000."
+    "kategori": "Tracking & Pengecekan Tiket",
+    "pertanyaan": "Bagaimana cara mengecek status perkembangan tiket kendala saya?",
+    "jawaban": "Cukup tanyakan nomor tiket Anda (misal: TCK-202610-0001) kepada TeknoBot di widget chat ini, atau buka menu 'My Tickets' pada dashboard portal untuk melihat riwayat log progres secara realtime."
   },
   {
-    "kategori": "Pengiriman & Tracking",
-    "pertanyaan": "Berapa lama estimasi pengiriman barang?",
-    "jawaban": "Untuk wilayah Jabodetabek estimasi 1-2 hari kerja. Untuk luar Jabodetabek (pulau Jawa) 2-3 hari kerja, dan luar pulau Jawa 3-5 hari kerja tergantung ekspedisi (JNE, SiCepat, Anteraja, atau J&T)."
+    "kategori": "Alur & Status Tiket",
+    "pertanyaan": "Apa arti status 'Pending Confirmation', 'In Progress', dan 'In Review'?",
+    "jawaban": "- Pending Confirmation: Tiket baru masuk dan menunggu validasi awal oleh Service Desk.\n- In Progress: Tiket sedang dikerjakan/diperbaiki secara intensif oleh Programmer teknis.\n- In Review: Programmer telah selesai memperbaiki dan sedang ditinjau/diuji oleh Project Manager (PM) sebelum dinyatakan Resolved."
   },
   {
-    "kategori": "Pengiriman & Tracking",
-    "pertanyaan": "Bagaimana cara mengecek status pesanan dan nomor resi saya?",
-    "jawaban": "Cukup berikan Order ID (misal: ORD-2026-001) atau nama pemesan kepada CS kami di chat ini, sistem kami akan langsung melacak status terkini beserta nomor resi pengiriman Anda."
+    "kategori": "Kendala Akun & Login",
+    "pertanyaan": "Bagaimana jika akun klien saya terkunci atau lupa kata sandi?",
+    "jawaban": "Akun terkunci otomatis jika salah password 5 kali. Anda dapat meminta reset kata sandi melalui tautan 'Forgot Password' di layar login, atau buat tiket kategori 'Akun' agar Service Desk segera mereset kredensial Anda."
   },
   {
-    "kategori": "Garansi & Retur",
-    "pertanyaan": "Bagaimana syarat dan ketentuan klaim garansi atau pengembalian produk (retur)?",
-    "jawaban": "Kami memberikan jaminan retur ganti baru dalam waktu 7x24 jam sejak barang diterima jika terdapat cacat pabrik, dengan syarat menyertakan video unboxing utuh tanpa jeda dan kelengkapan box masih utuh. Setelah 7 hari, klaim garansi resmi berlaku sesuai masa garansi masing-masing produk (Lenovo 3 tahun, Dell 3 tahun, aksesoris 1 tahun)."
+    "kategori": "Troubleshooting Software",
+    "pertanyaan": "Apa langkah awal jika muncul Error 500 atau layar putih saat menggunakan sistem?",
+    "jawaban": "1. Lakukan hard refresh (Ctrl + Shift + R di Windows/Linux atau Cmd + Shift + R di Mac).\n2. Bersihkan cache & cookies browser, atau coba buka melalui mode Incognito.\n3. Jika kendala masih berlanjut, catat waktu kejadian dan URL halaman, lalu laporkan tiket dengan kategori 'Software' agar programmer dapat memeriksa log server."
   },
   {
-    "kategori": "Layanan IT & Kendala",
-    "pertanyaan": "Apakah TeknoSolusi melayani perbaikan dan penanganan kendala software/hardware?",
-    "jawaban": "Ya! Kami memiliki paket 'Maintenance & Troubleshooting IT Client' yang menangani instalasi OS, optimasi jaringan, setup database, perbaikan bug software, hingga konsultasi hardware berkala baik secara remote maupun on-site."
+    "kategori": "SLA & Waktu Penyelesaian",
+    "pertanyaan": "Berapa lama standar waktu respon dan penyelesaian tiket (SLA)?",
+    "jawaban": "- Urgent (Downtime Sistem): Respon pertama < 30 menit, target selesai 2-4 jam.\n- High (Fungsi Kritis Terganggu): Respon < 1 jam, target selesai 8 jam kerja.\n- Medium (Kendala Minor): Respon < 4 jam, target selesai 1-2 hari kerja.\n- Low (Kosmetik/Panduan): Respon < 8 jam, target selesai 3 hari kerja."
   },
   {
-    "kategori": "Jam Operasional",
-    "pertanyaan": "Kapan jam operasional pelayanan Customer Service?",
-    "jawaban": "Layanan CS aktif Senin - Sabtu pukul 08:30 - 21:00 WIB, dan Minggu pukul 10:00 - 17:00 WIB. Chatbot AI kami siap melayani dan menjawab pertanyaan Anda 24/7!"
+    "kategori": "Eskalasi & Kontak Darurat",
+    "pertanyaan": "Ke mana saya harus menghubungi jika kendala sangat darurat dan butuh bantuan segera?",
+    "jawaban": "Hubungi hotline Service Desk di (021) 555-0199 atau WhatsApp darurat +62 811-9988-7766. Anda juga bisa datang langsung ke Meja Service Desk Lantai 2 Gedung IT Operasional."
   }
 ]
