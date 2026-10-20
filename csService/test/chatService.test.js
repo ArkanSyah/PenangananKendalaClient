@@ -33,6 +33,19 @@ describe('ChatService Core Functionality & Validation', () => {
     assert.match(result.response, /tidak dapat memproses instruksi/i);
   });
 
+  test('Menjawab pertanyaan "model apa lu" dengan identitas resmi TeknoBot tanpa membocorkan nama model/vendor', async () => {
+    const result = await chatService.processChat({
+      sessionId: 'test-white-label-1',
+      message: 'model apa lu'
+    });
+
+    assert.equal(result.isModelInquiry, true);
+    assert.match(result.response, /TeknoBot/i);
+    assert.doesNotMatch(result.response, /gemini/i);
+    assert.doesNotMatch(result.response, /google/i);
+    assert.doesNotMatch(result.response, /openai/i);
+  });
+
   test('Mampu me-reset riwayat sesi pengguna', () => {
     const sessId = 'session-to-reset';
     chatService.getSession(sessId);

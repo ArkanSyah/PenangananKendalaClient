@@ -78,7 +78,34 @@ describe('Prompt Injection & Security Guardrails Tests (OWASP LLM01 & LLM06)', (
     });
   });
 
-  // 4. False-Positive Validation: Pertanyaan Sah Klien Harus Lolos!
+  // 4. Kategori: White-Label Protection (Mencegah Kebocoran Nama Model/Vendor)
+  describe('White-Label & Model Identity Protection', () => {
+    test('Mendeteksi pertanyaan model: "model apa lu"', () => {
+      assert.equal(chatService.detectModelInquiry('model apa lu'), true);
+    });
+
+    test('Mendeteksi pertanyaan model: "kamu model apa"', () => {
+      assert.equal(chatService.detectModelInquiry('kamu model apa'), true);
+    });
+
+    test('Mendeteksi pertanyaan model: "kamu pake model apa"', () => {
+      assert.equal(chatService.detectModelInquiry('kamu pake model apa'), true);
+    });
+
+    test('Mendeteksi pertanyaan vendor: "kamu gemini ya?"', () => {
+      assert.equal(chatService.detectModelInquiry('kamu gemini ya?'), true);
+    });
+
+    test('Sanitizer menghapus kata "Gemini" dan "Google"', () => {
+      const dirty = 'Saya adalah model Gemini 3.8 Flash buatan Google.';
+      const clean = chatService.sanitizeResponse(dirty);
+      assert.doesNotMatch(clean, /gemini/i);
+      assert.doesNotMatch(clean, /google/i);
+      assert.match(clean, /TeknoBot/i);
+    });
+  });
+
+  // 5. False-Positive Validation: Pertanyaan Sah Klien Harus Lolos!
   describe('Validasi Pertanyaan Sah (Harus False / Lolos Guardrail)', () => {
     test('Pertanyaan tiket sah lolos: "Tolong cek status tiket TCK-202610-0001"', () => {
       const res = chatService.detectPromptInjection('Tolong cek status tiket TCK-202610-0001');
