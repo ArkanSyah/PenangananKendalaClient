@@ -65,11 +65,12 @@ class KnowledgeService {
     if (!query) return null;
     const cleanQuery = query.trim().toLowerCase();
     const tickets = this.getTickets();
-    return tickets.find(t => 
+    const found = tickets.find(t => 
       t.ticket_id.toLowerCase().includes(cleanQuery) ||
       t.judul.toLowerCase().includes(cleanQuery) ||
       t.pelapor.toLowerCase().includes(cleanQuery)
     );
+    return found || null;
   }
 
   getRelevantContext(userMessage) {
@@ -93,14 +94,28 @@ class KnowledgeService {
 
     // 2. Pencarian Tiket Spesifik / Tracking Tiket
     const isTicketQuery = q.match(/tck-\d{6}-\d{4}/i) || 
-      qTokens.some(w => ['tiket', 'ticket', 'kendala', 'lacak', 'status', 'progress', 'antrean', 'tck'].includes(w));
+      qTokens.some(w => ['tiket', 'ticket', 'kendala', 'lacak', 'status', 'progress', 'antrean', 'tck', 'login', 'error', '500'].includes(w));
 
     if (isTicketQuery) {
       const specificId = (q.match(/tck-\d{6}-\d{4}/i) || [])[0];
+      let targetTickets = [];
+
       if (specificId) {
         const found = this.findTicket(specificId);
-        if (found) {
-          contextParts.push(`[DATA DETAIL TIKET DITEMUKAN]:
+        if (found) targetTickets.push(found);
+      } else {
+        // Cari tiket yang cocok dengan kata kunci masalah
+        const matched = tickets.filter(t => {
+          const tText = (t.judul + ' ' + t.deskripsi + ' ' + t.kategori).toLowerCase();
+          return qTokens.some(w => tText.includes(w));
+        });
+        if (matched.length > 0) {
+          targetTickets = matched.slice(0, 3);
+        }
+      }
+
+      if (targetTickets.length > 0) {
+        const details = targetTickets.map(found => `[DATA DETAIL TIKET DITEMUKAN]:
 - ID Tiket: ${found.ticket_id}
 - Judul: ${found.judul}
 - Kategori: ${found.kategori} | Prioritas: ${found.prioritas}
@@ -109,8 +124,8 @@ class KnowledgeService {
 - PIC Programmer: ${found.pic_programmer || 'Belum ditugaskan'}
 - Tanggal Dibuat: ${found.tanggal_dibuat} | SLA Estimasi: ${found.sla_estimasi}
 - Log Progres Terakhir: ${found.log_terkini}
-- Solusi / Rekomendasi Sementara: ${found.solusi_sementara}`);
-        }
+- Solusi / Rekomendasi Sementara: ${found.solusi_sementara}`).join('\n\n');
+        contextParts.push(details);
       } else {
         // Tampilkan daftar ringkas tiket aktif
         const ticketSummary = tickets.map(t => 
