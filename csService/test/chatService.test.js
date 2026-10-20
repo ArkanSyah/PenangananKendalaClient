@@ -46,6 +46,20 @@ describe('ChatService Core Functionality & Validation', () => {
     assert.doesNotMatch(result.response, /openai/i);
   });
 
+  test('Memblokir akses ke tiket milik pengguna lain dan mencatat insiden unauthorized', async () => {
+    // Klien (user_id: 6) mencoba mengakses tiket TCK-202610-0007 milik admin/infrastruktur (user_id: 1)
+    const result = await chatService.processChat({
+      sessionId: 'test-unauthorized-session',
+      user: { id: 6, role: 'client', name: 'Corporate Client' },
+      message: 'Tolong cek perkembangan tiket TCK-202610-0007'
+    });
+
+    assert.equal(result.blockedByGuardrail, true);
+    assert.match(result.guardrailReason, /unauthorized/i);
+    assert.match(result.response, /tidak memiliki hak otorisasi/i);
+    assert.match(result.response, /TCK-202610-0007/);
+  });
+
   test('Mampu me-reset riwayat sesi pengguna', () => {
     const sessId = 'session-to-reset';
     chatService.getSession(sessId);

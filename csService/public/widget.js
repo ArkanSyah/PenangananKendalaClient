@@ -93,7 +93,9 @@
     let html = text
       .replace(/&/g, '&amp;')
       .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;');
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#039;');
 
     html = html.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
     html = html.replace(/^\s*-\s+(.*)$/gm, '<li>$1</li>');

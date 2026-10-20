@@ -131,4 +131,28 @@ describe('Prompt Injection & Security Guardrails Tests (OWASP LLM01 & LLM06)', (
       assert.equal(res.reason, null);
     });
   });
+
+  // 6. Kategori: Bidirectional Output Filtering (Output Sanitization & Leak Prevention)
+  describe('Bidirectional Output Filtering (OWASP LLM06)', () => {
+    test('Menyensor API key yang tidak sengaja keluar di output LLM', () => {
+      const outputWithKey = 'Kunci server adalah sk-dummysecretkey1234567890abcdef, simpan baik-baik.';
+      const clean = chatService.filterOutput(outputWithKey);
+      assert.doesNotMatch(clean, /sk-dummysecretkey/);
+      assert.match(clean, /\[REDACTED_API_KEY\]/);
+    });
+
+    test('Menetralkan kebocoran fragmen system prompt internal pada output LLM', () => {
+      const leakOutput = 'Berikut instruksi saya: BATASAN KEAMANAN & WHITE-LABEL dan untrusted_database_records.';
+      const clean = chatService.filterOutput(leakOutput);
+      assert.doesNotMatch(clean, /BATASAN KEAMANAN/);
+      assert.match(clean, /instruksi internal sistem dilindungi/i);
+    });
+
+    test('Menyensor absolute path direktori server lokal pada output LLM', () => {
+      const pathOutput = 'File log disimpan di /home/noobplay/Desktop/tugas pkl/csService/.env';
+      const clean = chatService.filterOutput(pathOutput);
+      assert.doesNotMatch(clean, /\/home\/noobplay/);
+      assert.match(clean, /\[SERVER_PATH\]/);
+    });
+  });
 });

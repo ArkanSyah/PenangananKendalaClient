@@ -1,9 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { MessageSquare, X, RotateCcw, Send, Bot, CheckCircle, ChevronRight } from 'lucide-react';
+import { MessageSquare, X, RotateCcw, Send, Bot, CheckCircle, ChevronRight, ShieldCheck } from 'lucide-react';
+import { useAuth } from '../AuthContext';
 
 const CS_API_BASE = 'http://localhost:3001';
 
 export function CustomerServiceWidget() {
+  const { user } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
@@ -100,6 +102,7 @@ export function CustomerServiceWidget() {
         body: JSON.stringify({
           sessionId,
           message: text,
+          user: user ? { id: user.id, name: user.name, role: user.role, email: user.email } : null,
           stream: true
         })
       });

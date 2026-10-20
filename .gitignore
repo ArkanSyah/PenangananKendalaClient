@@ -40,6 +40,8 @@ CLAUDE.md
 
 # Customer Service AI Microservice
 csService/data/sessions.json
+csService/logs/
+csService/*.log
 csService/.env
 csService/.env.*
 !csService/.env.example

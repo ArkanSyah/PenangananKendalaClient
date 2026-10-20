@@ -45,6 +45,7 @@
   "daftar_tiket": [
     {
       "ticket_id": "TCK-202610-0001",
+      "user_id": 6,
       "judul": "Kendala Login Portal: Muncul Error 500 Internal Server Error",
       "deskripsi": "Saat mencoba masuk ke akun portal klien menggunakan browser Chrome, muncul layar putih dengan pesan Error 500 setelah memasukkan kredensial.",
       "kategori": "Software",
@@ -60,6 +61,7 @@
     },
     {
       "ticket_id": "TCK-202610-0002",
+      "user_id": 6,
       "judul": "Permintaan Reset Password Email Operasional Cabang",
       "deskripsi": "Akun email operasional cabang Surabaya terkunci karena salah memasukkan password sebanyak 5 kali berturut-turut.",
       "kategori": "Akun",
@@ -75,6 +77,7 @@
     },
     {
       "ticket_id": "TCK-202610-0003",
+      "user_id": 6,
       "judul": "Koneksi API Payment Gateway Sering Mengalami Timeout",
       "deskripsi": "Transaksi pembayaran pelanggan gagal di atas jam 12:00 siang dengan response timeout dari gateway pembayaran.",
       "kategori": "Jaringan",
@@ -90,6 +93,7 @@
     },
     {
       "ticket_id": "TCK-202610-0004",
+      "user_id": 6,
       "judul": "Bug Formatting Laporan PDF Transaksi Bulanan",
       "deskripsi": "Tabel transaksi terpotong di halaman kedua pada saat cetak laporan PDF periode September 2026.",
       "kategori": "Software",
@@ -105,6 +109,7 @@
     },
     {
       "ticket_id": "TCK-202610-0005",
+      "user_id": 7,
       "judul": "Optimalisasi Query Dashboard Admin yang Lambat",
       "deskripsi": "Halaman rekapitulasi data tahunan membutuhkan waktu loading lebih dari 8 detik.",
       "kategori": "Software",
@@ -120,6 +125,7 @@
     },
     {
       "ticket_id": "TCK-202610-0006",
+      "user_id": 4,
       "judul": "Pembaruan Tampilan Notifikasi Badge di Mobile Browser",
       "deskripsi": "Badge notifikasi warna merah tidak muncul di browser Firefox mobile.",
       "kategori": "Software",
@@ -135,6 +141,7 @@
     },
     {
       "ticket_id": "TCK-202610-0007",
+      "user_id": 1,
       "judul": "Penggantian Switch Hub Utama Server Rack Gedung B",
       "deskripsi": "Port 1-8 pada core switch rack gedung B rusak fisik dan sering down, memerlukan pengadaan perangkat baru senilai Rp 15.000.000.",
       "kategori": "Hardware",
@@ -149,6 +156,7 @@
     },
     {
       "ticket_id": "TCK-202610-0008",
+      "user_id": 3,
       "judul": "Sinkronisasi Jam Server NTP dengan Database",
       "deskripsi": "Selisih waktu 2 menit antara server aplikasi dan database master.",
       "kategori": "Software",
