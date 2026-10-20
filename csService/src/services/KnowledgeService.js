@@ -76,9 +76,9 @@ class KnowledgeService {
   /**
    * Mencari tiket dengan validasi otorisasi kepemilikan user
    * @param {string} query 
-   * @param {{ id: number, role: string, name: string, email: string }} userContext 
+   * @param {{ id: number, role: string, name: string, email: string }|null} userContext 
    */
-  findTicket(query, userContext = { id: 6, role: 'client' }) {
+  findTicket(query, userContext = null) {
     if (!query) return null;
     const cleanQuery = query.trim().toLowerCase();
     const tickets = this.getTickets();
@@ -91,15 +91,26 @@ class KnowledgeService {
 
     if (!found) return null;
 
+    // Jika user belum login (tamu/guest), batasi akses tiket privat
+    if (!userContext || !userContext.id) {
+      return {
+        unauthorized: true,
+        ticket_id: found.ticket_id,
+        user_id: found.user_id,
+        isGuest: true
+      };
+    }
+
     // Cek Otorisasi Kepemilikan (Service Desk & Admin boleh lihat semua)
-    const isAdminOrStaff = userContext && (userContext.role === 'admin' || userContext.role === 'service_desk');
-    const isOwner = userContext && found.user_id === userContext.id;
+    const isAdminOrStaff = userContext.role === 'admin' || userContext.role === 'service_desk';
+    const isOwner = userContext.id && found.user_id === userContext.id;
 
     if (!isAdminOrStaff && !isOwner) {
       return {
         unauthorized: true,
         ticket_id: found.ticket_id,
         user_id: found.user_id,
+        isGuest: false
       };
     }
 
@@ -109,7 +120,7 @@ class KnowledgeService {
   /**
    * Membangun konteks RAG yang diisolasi per pengguna dan ditandai sebagai data murni (bukan instruksi)
    */
-  getRelevantContext(userMessage, userContext = { id: 6, role: 'client' }) {
+  getRelevantContext(userMessage, userContext = null) {
     const rawQ = (userMessage || '').toLowerCase();
     const qTokens = rawQ.replace(/[^a-z0-9\s]/g, ' ').split(/\s+/).filter(w => w.length > 2);
     const q = rawQ;
@@ -121,13 +132,28 @@ class KnowledgeService {
     const slas = this.getSla();
     const faqs = this.getFaqs();
 
-    // FILTER TIKET: Hanya ambil tiket milik pengguna yang sedang aktif (Data Isolation per Session)
-    const isAdminOrStaff = userContext && (userContext.role === 'admin' || userContext.role === 'service_desk');
+    // Validasi status login pengguna
+    const isLoggedIn = !!(userContext && userContext.id);
+    const isAdminOrStaff = isLoggedIn && (userContext.role === 'admin' || userContext.role === 'service_desk');
     const allowedTickets = isAdminOrStaff
       ? allTickets
-      : allTickets.filter(t => t.user_id === userContext.id);
+      : (isLoggedIn ? allTickets.filter(t => t.user_id === userContext.id) : []);
 
     let contextParts = [];
+
+    // Status Autentikasi Pengguna Aktif
+    if (isLoggedIn) {
+      contextParts.push(`[STATUS PENGGUNA AKTIF]:
+- Status Login: Terautentikasi (Sudah Login)
+- Nama: ${this.sanitizeDataContent(userContext.name || 'Pengguna')}
+- Role: ${this.sanitizeDataContent(userContext.role || 'client')}
+- User ID: ${userContext.id}
+(Ketahui bahwa pengguna ini sudah login dan Anda bisa menyapanya sesuai konteks bila relevan)`);
+    } else {
+      contextParts.push(`[STATUS PENGGUNA AKTIF]:
+- Status Login: Belum Login (Tamu / Guest)
+- Aturan: Pengguna saat ini belum login ke portal. Pengguna tidak memiliki tiket pribadi yang terhubung ke sesi ini. Jika pengguna menanyakan tiket pribadi atau ingin membuat tiket baru, arahkan dengan sopan untuk login ke portal terlebih dahulu. Pengguna tetap dapat dibantu untuk pertanyaan teknis umum, panduan troubleshooting error 500/akun terkunci, FAQ, alur workflow sistem, dan kontak CS.`);
+    }
 
     // 1. Informasi Sistem Helpdesk & Kontak Service Desk
     if (sistem) {
@@ -145,9 +171,15 @@ class KnowledgeService {
         const found = this.findTicket(specificId, userContext);
         if (found) {
           if (found.unauthorized) {
-            contextParts.push(`[PERINGATAN AKSES DITOLAK]:
-Pengguna meminta tiket ID "${this.sanitizeDataContent(found.ticket_id)}", namun tiket ini BUKAN milik pengguna aktif (user_id: ${userContext.id}).
+            if (found.isGuest) {
+              contextParts.push(`[PERINGATAN AKSES DITOLAK]:
+Pengguna meminta tiket ID "${this.sanitizeDataContent(found.ticket_id)}", namun pengguna BELUM LOGIN (Tamu).
+Instruksi: TOLAK memberikan detail isi tiket ini. Beritahu pengguna untuk login terlebih dahulu ke portal untuk mengakses perkembangan tiket kendala.`);
+            } else {
+              contextParts.push(`[PERINGATAN AKSES DITOLAK]:
+Pengguna meminta tiket ID "${this.sanitizeDataContent(found.ticket_id)}", namun tiket ini BUKAN milik pengguna aktif (user_id aktif: ${userContext?.id}).
 Instruksi: TOLAK memberikan data tiket ini. Beritahu klien bahwa mereka hanya memiliki hak akses untuk tiket yang dilaporkan oleh akun mereka sendiri.`);
+            }
           } else {
             contextParts.push(`[DATA DETAIL TIKET PENGGUNA]:
 - ID Tiket: ${this.sanitizeDataContent(found.ticket_id)}
@@ -178,10 +210,14 @@ Instruksi: TOLAK memberikan data tiket ini. Beritahu klien bahwa mereka hanya me
           contextParts.push(details);
         } else {
           // Hanya tampilkan daftar tiket milik pengguna yang sedang login
-          const summary = allowedTickets.map(t => 
-            `- ${this.sanitizeDataContent(t.ticket_id)}: "${this.sanitizeDataContent(t.judul)}" [Status: ${this.sanitizeDataContent(t.status_label)}]`
-          ).join('\n');
-          contextParts.push(`[DAFTAR TIKET MILIK PENGGUNA AKTIF]:\n${summary || 'Belum ada tiket yang dilaporkan oleh akun ini.'}`);
+          if (isLoggedIn) {
+            const summary = allowedTickets.map(t => 
+              `- ${this.sanitizeDataContent(t.ticket_id)}: "${this.sanitizeDataContent(t.judul)}" [Status: ${this.sanitizeDataContent(t.status_label)}]`
+            ).join('\n');
+            contextParts.push(`[DAFTAR TIKET MILIK PENGGUNA AKTIF]:\n${summary || 'Belum ada tiket yang dilaporkan oleh akun ini.'}`);
+          } else {
+            contextParts.push(`[DAFTAR TIKET]:\nPengguna belum login ke portal, tidak ada tiket pribadi yang terhubung.`);
+          }
         }
       }
     }

@@ -40,21 +40,21 @@ class ChatService {
     }
   }
 
-  getSession(sessionId, userContext = null) {
+  getSession(sessionId, userContext = undefined) {
     if (!sessionId) {
       sessionId = 'default-session-' + Math.random().toString(36).substring(2, 9);
     }
     if (!this.sessions.has(sessionId)) {
       this.sessions.set(sessionId, {
         id: sessionId,
-        user: userContext || { id: 6, role: 'client', name: 'Corporate Client', email: 'client@example.com' },
+        user: userContext || null,
         createdAt: new Date().toISOString(),
         messages: [],
       });
-    } else if (userContext) {
-      // Update data user sesi jika dikirimkan dari frontend (misal setelah login)
+    } else if (userContext !== undefined) {
+      // Sinkronkan data user sesi (misal setelah login user terisi, atau null jika logout)
       const sess = this.sessions.get(sessionId);
-      sess.user = { ...sess.user, ...userContext };
+      sess.user = userContext;
     }
     return this.sessions.get(sessionId);
   }
@@ -319,11 +319,17 @@ ${relevantContext}
           severity: 'WARN',
           ip,
           sessionId,
-          userId: session.user?.id,
-          details: { requestedTicketId: queriedTicketId, actualOwnerId: ticketLookup.user_id }
+          userId: session.user?.id || null,
+          details: { 
+            requestedTicketId: queriedTicketId, 
+            actualOwnerId: ticketLookup.user_id,
+            isGuest: !!ticketLookup.isGuest
+          }
         });
 
-        const denialMessage = `Maaf, Anda tidak memiliki hak otorisasi untuk melihat tiket **${queriedTicketId}** karena tiket tersebut bukan dilaporkan oleh akun Anda. Anda hanya dapat melacak tiket milik akun Anda sendiri.`;
+        const denialMessage = ticketLookup.isGuest
+          ? `Untuk alasan privasi dan keamanan data, Anda perlu **login** terlebih dahulu ke portal untuk melihat perkembangan tiket **${queriedTicketId}**.`
+          : `Maaf, Anda tidak memiliki hak otorisasi untuk melihat tiket **${queriedTicketId}** karena tiket tersebut bukan dilaporkan oleh akun Anda. Anda hanya dapat melacak tiket milik akun Anda sendiri.`;
 
         session.messages.push({ role: 'user', content: message, timestamp: new Date().toISOString() });
         session.messages.push({ role: 'assistant', content: denialMessage, timestamp: new Date().toISOString() });
@@ -335,7 +341,7 @@ ${relevantContext}
           sessionId: session.id,
           response: denialMessage,
           blockedByGuardrail: true,
-          guardrailReason: 'Unauthorized ticket access attempt'
+          guardrailReason: ticketLookup.isGuest ? 'Guest ticket access restricted' : 'Unauthorized ticket access attempt'
         };
       }
     }

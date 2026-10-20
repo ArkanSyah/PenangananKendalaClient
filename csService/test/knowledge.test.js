@@ -62,4 +62,24 @@ describe('KnowledgeService & Data Isolation Tests', () => {
     assert.doesNotMatch(clean, /<\/script>/i);
     assert.match(clean, /\[FILTERED_KEYWORD\]/);
   });
+
+  test('Tamu yang BELUM LOGIN (user null) ditolak saat mencari tiket dan ditandai isGuest: true', () => {
+    const result = knowledgeService.findTicket('TCK-202610-0001', null);
+    assert.ok(result);
+    assert.equal(result.unauthorized, true);
+    assert.equal(result.isGuest, true);
+  });
+
+  test('Konteks RAG membedakan status pengguna yang sudah login vs tamu', () => {
+    const guestContext = knowledgeService.getRelevantContext('Info helpdesk', null);
+    assert.match(guestContext, /Belum Login \(Tamu \/ Guest\)/);
+
+    const loggedInContext = knowledgeService.getRelevantContext('Info helpdesk', {
+      id: 6,
+      name: 'PT Maju Bersama',
+      role: 'client'
+    });
+    assert.match(loggedInContext, /Terautentikasi \(Sudah Login\)/);
+    assert.match(loggedInContext, /PT Maju Bersama/);
+  });
 });

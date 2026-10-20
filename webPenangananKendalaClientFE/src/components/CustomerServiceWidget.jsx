@@ -220,7 +220,13 @@ export function CustomerServiceWidget() {
                 <h4 className="font-bold text-sm tracking-tight leading-tight">TeknoBot CS</h4>
                 <div className="flex items-center gap-1.5 text-[11px] text-blue-100">
                   <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                  Online 24/7 (AI Assistant)
+                  {user ? (
+                    <span className="truncate max-w-[150px]" title={`${user.name} (${user.role})`}>
+                      👤 {user.name}
+                    </span>
+                  ) : (
+                    <span className="text-blue-200">Tamu (Belum Login)</span>
+                  )}
                 </div>
               </div>
             </div>
