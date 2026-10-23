@@ -1,0 +1,37 @@
+[
+  {
+    "kategori": "Pembuatan & Pelaporan Tiket",
+    "pertanyaan": "Bagaimana cara membuat tiket kendala baru di sistem?",
+    "jawaban": "Klien dapat membuat tiket baru melalui menu 'Create Ticket' pada portal web ini dengan mengisi Judul, Deskripsi kendala, Kategori (Software, Hardware, Jaringan, atau Akun), serta Prioritas. Untuk pelaporan langsung darurat di kantor, staf Service Desk dapat membuatkan 'Walk-in Ticket'."
+  },
+  {
+    "kategori": "Tracking & Pengecekan Tiket",
+    "pertanyaan": "Bagaimana cara mengecek status perkembangan tiket kendala saya?",
+    "jawaban": "Cukup tanyakan nomor tiket Anda (misal: TCK-202610-0001) kepada TeknoBot di widget chat ini, atau buka menu 'My Tickets' pada dashboard portal untuk melihat riwayat log progres secara realtime."
+  },
+  {
+    "kategori": "Alur & Status Tiket",
+    "pertanyaan": "Apa arti status 'Pending Confirmation', 'In Progress', dan 'In Review'?",
+    "jawaban": "- Pending Confirmation: Tiket baru masuk dan menunggu validasi awal oleh Service Desk.\n- In Progress: Tiket sedang dikerjakan/diperbaiki secara intensif oleh Programmer teknis.\n- In Review: Programmer telah selesai memperbaiki dan sedang ditinjau/diuji oleh Project Manager (PM) sebelum dinyatakan Resolved."
+  },
+  {
+    "kategori": "Kendala Akun & Login",
+    "pertanyaan": "Bagaimana jika akun klien saya terkunci atau lupa kata sandi?",
+    "jawaban": "Akun terkunci otomatis jika salah password 5 kali. Anda dapat meminta reset kata sandi melalui tautan 'Forgot Password' di layar login, atau buat tiket kategori 'Akun' agar Service Desk segera mereset kredensial Anda."
+  },
+  {
+    "kategori": "Troubleshooting Software",
+    "pertanyaan": "Apa langkah awal jika muncul Error 500 atau layar putih saat menggunakan sistem?",
+    "jawaban": "1. Lakukan hard refresh (Ctrl + Shift + R di Windows/Linux atau Cmd + Shift + R di Mac).\n2. Bersihkan cache & cookies browser, atau coba buka melalui mode Incognito.\n3. Jika kendala masih berlanjut, catat waktu kejadian dan URL halaman, lalu laporkan tiket dengan kategori 'Software' agar programmer dapat memeriksa log server."
+  },
+  {
+    "kategori": "SLA & Waktu Penyelesaian",
+    "pertanyaan": "Berapa lama standar waktu respon dan penyelesaian tiket (SLA)?",
+    "jawaban": "- Urgent (Downtime Sistem): Respon pertama < 30 menit, target selesai 2-4 jam.\n- High (Fungsi Kritis Terganggu): Respon < 1 jam, target selesai 8 jam kerja.\n- Medium (Kendala Minor): Respon < 4 jam, target selesai 1-2 hari kerja.\n- Low (Kosmetik/Panduan): Respon < 8 jam, target selesai 3 hari kerja."
+  },
+  {
+    "kategori": "Eskalasi & Kontak Darurat",
+    "pertanyaan": "Ke mana saya harus menghubungi jika kendala sangat darurat dan butuh bantuan segera?",
+    "jawaban": "Hubungi hotline Service Desk di (021) 555-0199 atau WhatsApp darurat +62 811-9988-7766. Anda juga bisa datang langsung ke Meja Service Desk Lantai 2 Gedung IT Operasional."
+  }
+]

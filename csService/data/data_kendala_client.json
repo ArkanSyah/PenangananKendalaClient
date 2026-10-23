@@ -1,0 +1,262 @@
+{
+  "sistem": {
+    "nama": "Sistem Penanganan Kendala Client (Ticketing & Helpdesk Support)",
+    "deskripsi": "Platform terintegrasi untuk pelaporan, penugasan, tracking, dan penyelesaian kendala IT client (Software, Hardware, Jaringan, dan Akun) dengan workflow berbasis peran (Client, Service Desk, PM, Programmer, Owner).",
+    "jam_layanan": "Service Desk: Senin - Jumat 08:00 - 17:00 WIB (Tiket darurat 24/7 dimonitor on-call)",
+    "kontak_helpdesk": {
+      "telepon": "(021) 555-0199",
+      "whatsapp": "+62 811-9988-7766",
+      "email": "helpdesk@penanganankendala.local",
+      "lokasi_walkin": "Lantai 2 Meja Service Desk Ruang Operasional IT"
+    }
+  },
+  "kategori_kendala": [
+    {
+      "kode": "SW",
+      "nama": "Software & Sistem",
+      "deskripsi": "Bug aplikasi, error 500 portal, bug query database, formatting laporan, kendala UI/UX",
+      "pic": "Tim Programmer Frontend & Backend"
+    },
+    {
+      "kode": "HW",
+      "nama": "Hardware & Perangkat",
+      "deskripsi": "Kerusakan fisik PC/laptop, printer, switch hub server rack, periferal kerja",
+      "pic": "Teknisi Hardware / Eskalasi Owner untuk pengadaan"
+    },
+    {
+      "kode": "NET",
+      "nama": "Jaringan & Infrastruktur",
+      "deskripsi": "Koneksi internet lambat/putus, timeout API payment gateway, setup VPN, konfigurasi DNS",
+      "pic": "Network Engineer & Programmer Integrasi"
+    },
+    {
+      "kode": "ACC",
+      "nama": "Akun & Hak Akses",
+      "deskripsi": "Lupa kata sandi, akun terkunci (max retry), permintaan hak akses role baru, aktivasi akun",
+      "pic": "Service Desk & Administrator"
+    },
+    {
+      "kode": "WI",
+      "nama": "Walk-In Ticket",
+      "deskripsi": "Kendala mendesak yang dilaporkan langsung oleh pegawai/klien di loket Service Desk",
+      "pic": "Petugas Service Desk on-duty"
+    }
+  ],
+  "daftar_tiket": [
+    {
+      "ticket_id": "TCK-202610-0001",
+      "user_id": 6,
+      "judul": "Kendala Login Portal: Muncul Error 500 Internal Server Error",
+      "deskripsi": "Saat mencoba masuk ke akun portal klien menggunakan browser Chrome, muncul layar putih dengan pesan Error 500 setelah memasukkan kredensial.",
+      "kategori": "Software",
+      "prioritas": "High",
+      "status": "pending_confirmation",
+      "status_label": "Menunggu Konfirmasi Service Desk",
+      "pelapor": "PT Mitra Usaha Utama (Klien)",
+      "kontak_pelapor": "081234567890 (Email)",
+      "tanggal_dibuat": "2026-10-18 09:15 WIB",
+      "sla_estimasi": "4 Jam Kerja",
+      "log_terkini": "Tiket kendala berhasil dibuat oleh klien melalui portal web, menunggu validasi Service Desk.",
+      "solusi_sementara": "Bersihkan cache & cookies browser Chrome, atau gunakan mode Incognito sementara investigasi log server berlangsung."
+    },
+    {
+      "ticket_id": "TCK-202610-0002",
+      "user_id": 6,
+      "judul": "Permintaan Reset Password Email Operasional Cabang",
+      "deskripsi": "Akun email operasional cabang Surabaya terkunci karena salah memasukkan password sebanyak 5 kali berturut-turut.",
+      "kategori": "Akun",
+      "prioritas": "Medium",
+      "status": "open",
+      "status_label": "Terbuka (Dalam Antrean Service Desk)",
+      "pelapor": "Budi Santoso (Cabang Surabaya)",
+      "kontak_pelapor": "081987654321 (Telepon)",
+      "tanggal_dibuat": "2026-10-19 10:30 WIB",
+      "sla_estimasi": "2 Jam Kerja",
+      "log_terkini": "Tiket dikonfirmasi oleh Service Desk dan masuk ke antrean investigasi verifikasi identitas tingkat 1.",
+      "solusi_sementara": "Siapkan KTP/ID pegawai cabang untuk verifikasi keamanan saat petugas Service Desk menghubungi."
+    },
+    {
+      "ticket_id": "TCK-202610-0003",
+      "user_id": 6,
+      "judul": "Koneksi API Payment Gateway Sering Mengalami Timeout",
+      "deskripsi": "Transaksi pembayaran pelanggan gagal di atas jam 12:00 siang dengan response timeout dari gateway pembayaran.",
+      "kategori": "Jaringan",
+      "prioritas": "High",
+      "status": "escalated_to_pm",
+      "status_label": "Eskalasi ke Project Manager",
+      "pelapor": "Fintech Client Partner",
+      "kontak_pelapor": "081122334455 (WhatsApp)",
+      "tanggal_dibuat": "2026-10-17 14:00 WIB",
+      "sla_estimasi": "8 Jam Kerja",
+      "log_terkini": "Kendala kompleks memerlukan analisis arsitektur, dieskalasi ke Project Manager untuk penjadwalan programmer backend.",
+      "solusi_sementara": "Gunakan payment method alternatif (Virtual Account / QRIS) selagi optimasi endpoint timeout dilakukan."
+    },
+    {
+      "ticket_id": "TCK-202610-0004",
+      "user_id": 6,
+      "judul": "Bug Formatting Laporan PDF Transaksi Bulanan",
+      "deskripsi": "Tabel transaksi terpotong di halaman kedua pada saat cetak laporan PDF periode September 2026.",
+      "kategori": "Software",
+      "prioritas": "Medium",
+      "status": "waiting_programmer",
+      "status_label": "Menunggu Klaim Programmer",
+      "pelapor": "Finance Dept Client",
+      "kontak_pelapor": "finance@clientcorp.id",
+      "tanggal_dibuat": "2026-10-16 11:20 WIB",
+      "sla_estimasi": "1 Hari Kerja",
+      "log_terkini": "PM merilis tiket ke daftar Available Tickets agar dapat di-claim oleh programmer dengan waktu luang (Estimasi 4 jam).",
+      "solusi_sementara": "Ekspor data ke format Excel (CSV) untuk keperluan audit darurat."
+    },
+    {
+      "ticket_id": "TCK-202610-0005",
+      "user_id": 7,
+      "judul": "Optimalisasi Query Dashboard Admin yang Lambat",
+      "deskripsi": "Halaman rekapitulasi data tahunan membutuhkan waktu loading lebih dari 8 detik.",
+      "kategori": "Software",
+      "prioritas": "High",
+      "status": "in_progress",
+      "status_label": "Sedang Dikerjakan oleh Programmer",
+      "pelapor": "Admin Operasional",
+      "pic_programmer": "Programmer Dev One",
+      "tanggal_dibuat": "2026-10-15 08:45 WIB",
+      "sla_estimasi": "6 Jam Kerja",
+      "log_terkini": "Programmer sedang profiling query SQL dan menambahkan indexing kolom created_at serta status pada database.",
+      "solusi_sementara": "Gunakan filter rentang tanggal per-bulan untuk mempercepat query dashboard."
+    },
+    {
+      "ticket_id": "TCK-202610-0006",
+      "user_id": 4,
+      "judul": "Pembaruan Tampilan Notifikasi Badge di Mobile Browser",
+      "deskripsi": "Badge notifikasi warna merah tidak muncul di browser Firefox mobile.",
+      "kategori": "Software",
+      "prioritas": "Low",
+      "status": "pending_review",
+      "status_label": "Selesai Dikerjakan (Menunggu Review PM)",
+      "pelapor": "QA / Mobile User",
+      "pic_programmer": "Programmer Dev Two",
+      "tanggal_dibuat": "2026-10-14 13:10 WIB",
+      "sla_estimasi": "3 Jam Kerja",
+      "log_terkini": "Solusi Canvas Dynamic Favicon fallback telah diimplementasikan dan diuji di Firefox mobile. Menunggu review PM.",
+      "solusi_sementara": "Buka notifikasi melalui panel lonceng di menu navbar."
+    },
+    {
+      "ticket_id": "TCK-202610-0007",
+      "user_id": 1,
+      "judul": "Penggantian Switch Hub Utama Server Rack Gedung B",
+      "deskripsi": "Port 1-8 pada core switch rack gedung B rusak fisik dan sering down, memerlukan pengadaan perangkat baru senilai Rp 15.000.000.",
+      "kategori": "Hardware",
+      "prioritas": "Urgent",
+      "status": "escalated_to_owner",
+      "status_label": "Eskalasi ke Owner (Menunggu Approval Anggaran)",
+      "pelapor": "Tim Infrastruktur IT",
+      "tanggal_dibuat": "2026-10-13 16:30 WIB",
+      "sla_estimasi": "1-2 Hari Kerja",
+      "log_terkini": "Eskalasi pengajuan anggaran perangkat keras pengganti ke Company Owner untuk persetujuan purchase order.",
+      "solusi_sementara": "Trafik sementara dialihkan ke switch cadangan (port 9-16) dengan bandwidth sharing."
+    },
+    {
+      "ticket_id": "TCK-202610-0008",
+      "user_id": 3,
+      "judul": "Sinkronisasi Jam Server NTP dengan Database",
+      "deskripsi": "Selisih waktu 2 menit antara server aplikasi dan database master.",
+      "kategori": "Software",
+      "prioritas": "Low",
+      "status": "resolved",
+      "status_label": "Selesai / Teratasi (Resolved)",
+      "pelapor": "DevOps Engineer",
+      "pic_programmer": "Programmer Dev One",
+      "tanggal_dibuat": "2026-10-12 11:00 WIB",
+      "sla_estimasi": "Selesai",
+      "log_terkini": "NTP daemon chrony telah dikonfigurasi ulang dan waktu tersinkronisasi 0.001 detik. Tiket siap ditutup Service Desk.",
+      "solusi_sementara": "Kendala telah tuntas diselesaikan."
+    }
+  ],
+  "alur_status_workflow": [
+    {
+      "status": "pending_confirmation",
+      "nama": "Menunggu Konfirmasi",
+      "penanggung_jawab": "Service Desk",
+      "keterangan": "Tiket baru dibuat oleh Klien / Walk-in, menunggu pengecekan awal kelengkapan data oleh Service Desk."
+    },
+    {
+      "status": "open",
+      "nama": "Terbuka (Open)",
+      "penanggung_jawab": "Service Desk / PM",
+      "keterangan": "Tiket terverifikasi valid dan masuk antrean penanganan."
+    },
+    {
+      "status": "escalated_to_pm",
+      "nama": "Dieskalasi ke PM",
+      "penanggung_jawab": "Project Manager",
+      "keterangan": "Kendala kompleks tingkat 2 yang membutuhkan analisis arsitektur atau pembagian tugas tim pengembang."
+    },
+    {
+      "status": "waiting_programmer",
+      "nama": "Menunggu Klaim Programmer",
+      "penanggung_jawab": "Programmer",
+      "keterangan": "Tiket sudah dirilis oleh PM ke pool 'Available Tickets' agar bisa diklaim mandiri oleh programmer."
+    },
+    {
+      "status": "in_progress",
+      "nama": "Sedang Dikerjakan",
+      "penanggung_jawab": "Programmer yang ditugaskan",
+      "keterangan": "Programmer sedang melakukan debugging, coding, atau perbaikan teknis."
+    },
+    {
+      "status": "pending_review / in_review",
+      "nama": "Menunggu Review PM",
+      "penanggung_jawab": "Project Manager",
+      "keterangan": "Programmer telah selesai memperbaiki dan mengirimkan pull request / hasil pengerjaan untuk diuji oleh PM."
+    },
+    {
+      "status": "escalated_to_owner",
+      "nama": "Dieskalasi ke Owner",
+      "penanggung_jawab": "Company Owner",
+      "keterangan": "Kendala memerlukan keputusan tingkat tinggi atau persetujuan anggaran pengadaan (misal hardware baru)."
+    },
+    {
+      "status": "resolved",
+      "nama": "Teratasi (Resolved)",
+      "penanggung_jawab": "Service Desk & Klien",
+      "keterangan": "Perbaikan berhasil diverifikasi oleh PM. Menunggu konfirmasi akhir dari klien sebelum ditutup."
+    },
+    {
+      "status": "closed",
+      "nama": "Ditutup (Closed)",
+      "penanggung_jawab": "Service Desk",
+      "keterangan": "Tiket selesai sepenuhnya dan diarsipkan ke riwayat penanganan."
+    },
+    {
+      "status": "rejected",
+      "nama": "Ditolak (Rejected)",
+      "penanggung_jawab": "Service Desk / PM",
+      "keterangan": "Tiket ditolak karena tidak memenuhi syarat, bukan kendala sistem, atau merupakan duplikasi."
+    }
+  ],
+  "sla_level": [
+    {
+      "prioritas": "Urgent",
+      "respon_pertama": "< 30 Menit",
+      "target_selesai": "2 - 4 Jam",
+      "kriteria": "Layanan utama mati total (down), kerugian operasional besar, transaksi klien terhenti."
+    },
+    {
+      "prioritas": "High",
+      "respon_pertama": "< 1 Jam",
+      "target_selesai": "8 Jam Kerja",
+      "kriteria": "Fitur penting terganggu tetapi masih ada workaround sementara."
+    },
+    {
+      "prioritas": "Medium",
+      "respon_pertama": "< 4 Jam",
+      "target_selesai": "1 - 2 Hari Kerja",
+      "kriteria": "Kendala minor, bug laporan, akun terkunci satu cabang."
+    },
+    {
+      "prioritas": "Low",
+      "respon_pertama": "< 8 Jam",
+      "target_selesai": "3 - 5 Hari Kerja",
+      "kriteria": "Penyempurnaan tampilan, minor UI glitch, pertanyaan panduan sistem."
+    }
+  ]
+}
