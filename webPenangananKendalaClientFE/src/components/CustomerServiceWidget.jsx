@@ -1,8 +1,15 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { MessageSquare, X, RotateCcw, Send, Bot, CheckCircle, ChevronRight, ShieldCheck } from 'lucide-react';
+import axios from 'axios';
 import { useAuth } from '../AuthContext';
 
-const CS_API_BASE = 'http://localhost:3001';
+const csApi = axios.create({
+  baseURL: 'http://100.114.187.77:3001', // Sesuaikan dengan IP/URL server AI CS
+  withCredentials: true,
+  headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' }
+});
+
+const CS_API_BASE = 'http://100.114.187.77:3001';
 
 export function CustomerServiceWidget() {
   const { user } = useAuth();
@@ -39,9 +46,8 @@ export function CustomerServiceWidget() {
 
   const loadHistory = async () => {
     try {
-      const res = await fetch(`${CS_API_BASE}/api/history/${sessionId}`);
-      if (!res.ok) throw new Error();
-      const data = await res.json();
+      const res = await csApi.get(`/api/history/${sessionId}`);
+      const data = res.data;
       if (data.data && data.data.length > 0) {
         setMessages(data.data);
       } else {
@@ -67,7 +73,7 @@ export function CustomerServiceWidget() {
   const handleReset = async () => {
     if (!window.confirm('Hapus seluruh riwayat percakapan CS?')) return;
     try {
-      await fetch(`${CS_API_BASE}/api/reset/${sessionId}`, { method: 'POST' });
+      await csApi.post(`/api/reset/${sessionId}`);
       setMessages([
         {
           role: 'assistant',
@@ -98,6 +104,7 @@ export function CustomerServiceWidget() {
     try {
       const res = await fetch(`${CS_API_BASE}/api/chat`, {
         method: 'POST',
+        credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           sessionId,

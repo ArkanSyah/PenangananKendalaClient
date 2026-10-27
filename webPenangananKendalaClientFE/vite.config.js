@@ -12,6 +12,7 @@ export default defineConfig(({ mode }) => {
   plugins: [
     react(),
     VitePWA({
+      devOptions: { enabled: false },
       registerType: 'prompt',
       injectRegister: false,
       includeAssets: ['favicon.svg', 'icons.svg', 'apple-touch-icon-180x180.png'],
@@ -59,10 +60,12 @@ export default defineConfig(({ mode }) => {
     allowedHosts: [
       'exes-slang-navigate.ngrok-free.dev',
       'localhost',
-    ],
+      env.VITE_TAILSCALE_IP
+    ].filter(Boolean),
     proxy: {
-      '/api': { target: 'http://localhost:8000', changeOrigin: true },
-      '/storage': { target: 'http://localhost:8000', changeOrigin: true },
+      '/api': { target: 'http://127.0.0.1:8000', changeOrigin: true },
+      '/sanctum': { target: 'http://127.0.0.1:8000', changeOrigin: true },
+      '/storage': { target: 'http://127.0.0.1:8000', changeOrigin: true },
     },
   },
   preview: {
