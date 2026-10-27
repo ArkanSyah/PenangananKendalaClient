@@ -64,7 +64,9 @@ export const AuthProvider = ({ children }) => {
           setUser(response.data);
         } catch (error) {
           console.error("Failed to fetch user with token", error);
-          handleLogout();
+          if (error.response?.status === 401) {
+            handleLogout();
+          }
         }
       }
       setLoading(false);
@@ -78,6 +80,7 @@ export const AuthProvider = ({ children }) => {
       const response = await axios.post('/login', { email, password });
       const { access_token, user: userData } = response.data;
       localStorage.setItem('token', access_token);
+      axios.defaults.headers.common['Authorization'] = `Bearer ${access_token}`;
       setToken(access_token);
       setUser(userData);
       return userData;
@@ -95,6 +98,7 @@ export const AuthProvider = ({ children }) => {
       }
     }
     await purgeApiCache().catch(() => {});
+    delete axios.defaults.headers.common['Authorization'];
     sessionStorage.removeItem('board-layout');
     localStorage.removeItem('token');
     setToken(null);
