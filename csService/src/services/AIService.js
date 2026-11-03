@@ -30,61 +30,64 @@ class AIService {
       headers['Authorization'] = `Bearer ${this.apiKey}`;
     }
 
-    let response;
+    let fullContent = '';
+
     try {
-      response = await fetch(url, {
+      const response = await fetch(url, {
         method: 'POST',
         headers,
         body: JSON.stringify(payload),
-        signal: AbortSignal.timeout(12000)
+        signal: AbortSignal.timeout(60000)
       });
 
       if (!response.ok) {
         throw new Error(`AI API HTTP ${response.status}`);
       }
-    } catch (err) {
-      // Fallback cerdas jika proxy AI offline (misal pada lingkungan CI/CD atau dev tanpa proxy lokal)
-      const fallback = this.generateOfflineFallback(messages);
-      if (onChunk) {
-        onChunk(fallback);
-      }
-      return fallback;
-    }
 
-    let fullContent = '';
-    const reader = response.body.getReader();
-    const decoder = new TextDecoder('utf-8');
-    let buffer = '';
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder('utf-8');
+      let buffer = '';
 
-    while (true) {
-      const { done, value } = await reader.read();
-      if (done) break;
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
 
-      buffer += decoder.decode(value, { stream: true });
-      const lines = buffer.split('\n');
-      buffer = lines.pop();
+        buffer += decoder.decode(value, { stream: true });
+        const lines = buffer.split('\n');
+        buffer = lines.pop();
 
-      for (const line of lines) {
-        const trimmed = line.trim();
-        if (!trimmed || !trimmed.startsWith('data: ')) continue;
+        for (const line of lines) {
+          const trimmed = line.trim();
+          if (!trimmed || !trimmed.startsWith('data: ')) continue;
 
-        const dataStr = trimmed.slice(6);
-        if (dataStr === '[DONE]') {
-          break;
-        }
-
-        try {
-          const json = JSON.parse(dataStr);
-          const delta = json.choices?.[0]?.delta;
-          if (delta?.content) {
-            fullContent += delta.content;
-            if (onChunk) {
-              onChunk(delta.content);
-            }
+          const dataStr = trimmed.slice(6);
+          if (dataStr === '[DONE]') {
+            break;
           }
-        } catch (e) {
-          // Abaikan chunk non-JSON
+
+          try {
+            const json = JSON.parse(dataStr);
+            const delta = json.choices?.[0]?.delta;
+            if (delta?.content) {
+              fullContent += delta.content;
+              if (onChunk) {
+                onChunk(delta.content);
+              }
+            }
+          } catch (e) {
+            // Abaikan chunk non-JSON
+          }
         }
+      }
+    } catch (err) {
+      console.warn('[AIService] Stream error:', err.message);
+      // Jika terjadi timeout atau koneksi putus saat streaming belum menghasilkan konten
+      if (!fullContent) {
+        const fallback = this.generateOfflineFallback(messages);
+        if (onChunk) {
+          onChunk(fallback);
+        }
+        return fallback;
       }
     }
 

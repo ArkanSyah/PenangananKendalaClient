@@ -12,20 +12,48 @@ export function CustomerServiceWidget() {
   const [isSending, setIsSending] = useState(false);
   const messagesEndRef = useRef(null);
 
-  // Ambil atau generate session id
-  const [sessionId] = useState(() => {
-    let saved = localStorage.getItem('cs_session_id');
-    if (!saved) {
-      saved = 'sess_' + Math.random().toString(36).substring(2, 10);
-      localStorage.setItem('cs_session_id', saved);
+  // Ambil atau generate session id dinamis (User-Scoped Session)
+  // Tamu (Belum Login) menggunakan session terisolasi 'sess_guest_...'
+  // Pengguna Terautentikasi otomatis menggunakan 'sess_user_${user.id}'
+  const getGuestSessionId = () => {
+    let saved = localStorage.getItem('cs_guest_session_id') || localStorage.getItem('cs_session_id');
+    if (!saved || saved.startsWith('sess_user_')) {
+      saved = 'sess_guest_' + Math.random().toString(36).substring(2, 10);
+      localStorage.setItem('cs_guest_session_id', saved);
     }
     return saved;
-  });
+  };
 
-  // Sambutan awal
+  const sessionId = user?.id ? `sess_user_${user.id}` : getGuestSessionId();
+
+  const getWelcomeMessage = (currentUser) => {
+    if (currentUser) {
+      const roleLabels = {
+        client: 'Klien',
+        admin: 'Administrator',
+        service_desk: 'Service Desk',
+        project_manager: 'Project Manager',
+        programmer: 'Programmer',
+        owner: 'Pimpinan'
+      };
+      const roleLabel = roleLabels[currentUser.role] || currentUser.role;
+      return {
+        role: 'assistant',
+        content: `Halo **${currentUser.name}**! 👋\n\nAnda sekarang terhubung sebagai **${roleLabel}**. Riwayat sesi dan tiket kendala Anda telah disinkronkan secara aman. Ada kendala IT atau status tiket yang ingin Anda cek?`,
+        timestamp: new Date().toISOString()
+      };
+    }
+    return {
+      role: 'assistant',
+      content: 'Halo! 👋 Selamat datang di **Sistem Penanganan Kendala Client**.\n\nSaya **TeknoBot**, asisten CS & Helpdesk AI. Ada kendala IT yang bisa saya bantu cek (misal status tiket kendala, panduan penanganan error 500, akun login terkunci, atau eskalasi ke Service Desk)?',
+      timestamp: new Date().toISOString()
+    };
+  };
+
+  // Muat riwayat percakapan setiap kali sessionId / status user berubah (Reaktif instan)
   useEffect(() => {
-    loadHistory();
-  }, [sessionId]);
+    loadHistory(sessionId, user);
+  }, [sessionId, user?.id]);
 
   useEffect(() => {
     if (isOpen) {
@@ -37,30 +65,21 @@ export function CustomerServiceWidget() {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
-  const loadHistory = async () => {
+  const loadHistory = async (targetSessionId = sessionId, currentUser = user) => {
     try {
-      const res = await fetch(`${CS_API_BASE}/api/history/${sessionId}`);
+      const userQuery = currentUser?.id
+        ? `?userId=${currentUser.id}&role=${encodeURIComponent(currentUser.role || '')}&name=${encodeURIComponent(currentUser.name || '')}`
+        : '';
+      const res = await fetch(`${CS_API_BASE}/api/history/${targetSessionId}${userQuery}`);
       if (!res.ok) throw new Error();
       const data = await res.json();
       if (data.data && data.data.length > 0) {
         setMessages(data.data);
       } else {
-        setMessages([
-          {
-            role: 'assistant',
-            content: 'Halo! 👋 Selamat datang di **Sistem Penanganan Kendala Client**.\n\nSaya **TeknoBot**, asisten CS & Helpdesk AI. Ada kendala IT yang bisa saya bantu cek (misal status tiket kendala, panduan penanganan error 500, akun login terkunci, atau eskalasi ke Service Desk)?',
-            timestamp: new Date().toISOString()
-          }
-        ]);
+        setMessages([getWelcomeMessage(currentUser)]);
       }
     } catch {
-      setMessages([
-        {
-          role: 'assistant',
-          content: 'Halo! 👋 Selamat datang di **Sistem Penanganan Kendala Client**.\n\nSaya **TeknoBot**, asisten CS & Helpdesk AI. Ada kendala IT yang bisa saya bantu cek (misal status tiket kendala, panduan penanganan error 500, akun login terkunci, atau eskalasi ke Service Desk)?',
-          timestamp: new Date().toISOString()
-        }
-      ]);
+      setMessages([getWelcomeMessage(currentUser)]);
     }
   };
 
@@ -71,7 +90,9 @@ export function CustomerServiceWidget() {
       setMessages([
         {
           role: 'assistant',
-          content: 'Riwayat percakapan telah dibersihkan. ✨\n\nAda hal lain yang bisa TeknoBot bantu?',
+          content: user
+            ? `Riwayat percakapan telah dibersihkan. ✨\n\nAda hal lain yang bisa TeknoBot bantu untuk Anda, **${user.name}**?`
+            : 'Riwayat percakapan telah dibersihkan. ✨\n\nAda hal lain yang bisa TeknoBot bantu?',
           timestamp: new Date().toISOString()
         }
       ]);

@@ -121,9 +121,14 @@ router.post('/chat', async (req, res) => {
   }
 });
 
-// 6. Riwayat Chat per Sesi
+// 6. Riwayat Chat per Sesi (Mendukung Sinkronisasi Konteks Pengguna)
 router.get('/history/:sessionId', (req, res) => {
-  const history = chatService.getHistory(req.params.sessionId);
+  const user = req.query.userId ? {
+    id: parseInt(req.query.userId),
+    role: req.query.role || 'client',
+    name: req.query.name || ''
+  } : undefined;
+  const history = chatService.getHistory(req.params.sessionId, user);
   res.json({
     status: 'success',
     sessionId: req.params.sessionId,
