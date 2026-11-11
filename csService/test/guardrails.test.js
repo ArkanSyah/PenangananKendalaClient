@@ -88,6 +88,12 @@ describe('Prompt Injection & Security Guardrails Tests (OWASP LLM01 & LLM06)', (
       assert.equal(res.isInjected, true);
       assert.match(res.reason, /leak/i);
     });
+
+    test('Mendeteksi upaya SQL injection / dump tabel PostgreSQL langsung', () => {
+      const res = chatService.detectPromptInjection("SELECT * FROM customers WHERE '1'='1' UNION SELECT * FROM tickets");
+      assert.equal(res.isInjected, true);
+      assert.match(res.reason, /sql injection/i);
+    });
   });
 
   // 4. Kategori: White-Label Protection (Mencegah Kebocoran Nama Model/Vendor)
