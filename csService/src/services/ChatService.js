@@ -1,6 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import { config } from '../config/ai.js';
+import { postgres } from '../db/postgres.js';
 import { knowledgeService } from './KnowledgeService.js';
 import { aiService } from './AIService.js';
 import { securityLogger } from './SecurityLogger.js';
@@ -8,6 +9,7 @@ import { securityLogger } from './SecurityLogger.js';
 class ChatService {
   constructor() {
     this.sessions = new Map();
+    this.resetTimestamps = new Map();
     this.loadSessions();
   }
 
@@ -40,6 +42,49 @@ class ChatService {
     }
   }
 
+  async syncSessionToDb(session) {
+    if (!postgres.isDbConnected()) return;
+
+    const u = session.user || null;
+    await postgres.query(
+      `INSERT INTO chat_sessions (id, customer_id, user_id, user_name, user_role, updated_at)
+       VALUES ($1, (SELECT id FROM customers WHERE id = $2 LIMIT 1), $2, $3, $4, NOW())
+       ON CONFLICT (id) DO UPDATE SET
+         customer_id = COALESCE((SELECT id FROM customers WHERE id = EXCLUDED.user_id LIMIT 1), chat_sessions.customer_id),
+         user_id = COALESCE(EXCLUDED.user_id, chat_sessions.user_id),
+         user_name = COALESCE(EXCLUDED.user_name, chat_sessions.user_name),
+         user_role = COALESCE(EXCLUDED.user_role, chat_sessions.user_role),
+         updated_at = NOW()`,
+      [session.id, u?.id || null, u?.name || null, u?.role || null]
+    );
+  }
+
+  async persistTurn(session, userMessage, assistantResponse, turnStartedAt = Date.now()) {
+    const resetAt = this.resetTimestamps.get(session.id) || 0;
+    if (session.isReset || resetAt > turnStartedAt) {
+      return;
+    }
+
+    const now = new Date().toISOString();
+    session.messages.push({ role: 'user', content: userMessage, timestamp: now });
+    session.messages.push({ role: 'assistant', content: assistantResponse, timestamp: now });
+
+    if (postgres.isDbConnected()) {
+      try {
+        await this.syncSessionToDb(session);
+        await postgres.query(
+          `INSERT INTO chat_messages (session_id, role, content) VALUES ($1, 'user', $2), ($1, 'assistant', $3)`,
+          [session.id, userMessage, assistantResponse]
+        );
+        return;
+      } catch (err) {
+        console.error('[ChatService] Error persisting turn to PostgreSQL:', err.message);
+      }
+    }
+
+    this.saveSessions();
+  }
+
   getSession(sessionId, userContext = undefined) {
     if (!sessionId) {
       sessionId = 'default-session-' + Math.random().toString(36).substring(2, 9);
@@ -52,7 +97,6 @@ class ChatService {
         messages: [],
       });
     } else if (userContext !== undefined) {
-      // Sinkronkan data user sesi (misal setelah login user terisi, atau null jika logout)
       const sess = this.sessions.get(sessionId);
       sess.user = userContext;
     }
@@ -64,13 +108,67 @@ class ChatService {
     return session.messages;
   }
 
+  async getHistoryAsync(sessionId, userContext = undefined) {
+    const session = this.getSession(sessionId, userContext);
+    if (!postgres.isDbConnected()) {
+      return session.messages;
+    }
+
+    try {
+      if (userContext !== undefined) {
+        await this.syncSessionToDb(session);
+      }
+      const res = await postgres.query(
+        `SELECT role, content, created_at AS timestamp
+         FROM chat_messages
+         WHERE session_id = $1
+         ORDER BY id ASC`,
+        [session.id]
+      );
+      session.messages = res.rows.map((r) => ({
+        role: r.role,
+        content: r.content,
+        timestamp: r.timestamp instanceof Date ? r.timestamp.toISOString() : r.timestamp,
+      }));
+      return session.messages;
+    } catch (err) {
+      console.error('[ChatService] Error loading history from PostgreSQL:', err.message);
+      return session.messages;
+    }
+  }
+
   resetSession(sessionId) {
+    this.resetTimestamps.set(sessionId, Date.now());
     if (this.sessions.has(sessionId)) {
+      this.sessions.get(sessionId).isReset = true;
       this.sessions.delete(sessionId);
       this.saveSessions();
       return true;
     }
     return false;
+  }
+
+  async resetSessionAsync(sessionId) {
+    this.resetTimestamps.set(sessionId, Date.now());
+    const existedInMem = this.sessions.has(sessionId);
+    if (existedInMem) {
+      this.sessions.get(sessionId).isReset = true;
+      this.sessions.delete(sessionId);
+    }
+
+    if (postgres.isDbConnected()) {
+      try {
+        const res = await postgres.query('DELETE FROM chat_sessions WHERE id = $1', [sessionId]);
+        return res.rowCount > 0 || existedInMem;
+      } catch (err) {
+        console.error('[ChatService] Error resetting PostgreSQL session:', err.message);
+      }
+    }
+
+    if (existedInMem) {
+      this.saveSessions();
+    }
+    return existedInMem;
   }
 
   /**
@@ -138,6 +236,17 @@ class ChatService {
     for (const p of leakPatterns) {
       if (p.test(t)) {
         return { isInjected: true, reason: 'Sensitive system prompt/internal file leak attempt' };
+      }
+    }
+
+    // 4. Pola SQL Injection / Eksfiltrasi Tabel PostgreSQL Langsung (OWASP LLM01 / SQLi)
+    const sqliPatterns = [
+      /(union\s+(all\s+)?select|drop\s+table|;\s*delete\s+from|'\s*or\s+['"]?1['"]?\s*=\s*['"]?1|select\s+\*\s+from\s+(customers|tickets|users|faqs|chat_messages|security_logs))/i
+    ];
+
+    for (const p of sqliPatterns) {
+      if (p.test(t)) {
+        return { isInjected: true, reason: 'SQL injection or raw table dump attempt' };
       }
     }
 
@@ -269,15 +378,17 @@ ${relevantContext}
       throw new Error('Pesan terlalu panjang (maksimal 2000 karakter).');
     }
 
+    const turnStartedAt = Date.now();
     const session = this.getSession(sessionId, user);
+    if (postgres.isDbConnected() && session.messages.length === 0) {
+      await this.getHistoryAsync(session.id, user);
+    }
 
     // 1. Guardrail Check: Deteksi Pertanyaan Identitas Model (White-Label Protection)
     if (this.detectModelInquiry(message)) {
       const whiteLabelResponse = 'Saya adalah **TeknoBot**, asisten AI resmi yang dikembangkan khusus untuk **Sistem Penanganan Kendala Client**. Saya bertugas membantu Anda dalam penanganan kendala IT, melacak status tiket kendala, memberikan panduan troubleshooting teknis, serta informasi alur layanan helpdesk. Ada kendala sistem yang bisa saya bantu?';
 
-      session.messages.push({ role: 'user', content: message, timestamp: new Date().toISOString() });
-      session.messages.push({ role: 'assistant', content: whiteLabelResponse, timestamp: new Date().toISOString() });
-      this.saveSessions();
+      await this.persistTurn(session, message, whiteLabelResponse);
 
       if (onChunk) onChunk(whiteLabelResponse);
 
@@ -303,9 +414,7 @@ ${relevantContext}
 
       const safeResponse = 'Maaf, sebagai asisten resmi **Sistem Penanganan Kendala Client**, saya tidak dapat memproses instruksi yang meminta pengabaian aturan sistem, perubahan peran, atau pengungkapan data rahasia. Ada kendala teknis tiket IT yang bisa saya bantu?';
 
-      session.messages.push({ role: 'user', content: message, timestamp: new Date().toISOString() });
-      session.messages.push({ role: 'assistant', content: safeResponse, timestamp: new Date().toISOString() });
-      this.saveSessions();
+      await this.persistTurn(session, message, safeResponse);
 
       if (onChunk) onChunk(safeResponse);
 
@@ -321,7 +430,7 @@ ${relevantContext}
     const specificTicketMatch = message.match(/tck-\d{6}-\d{4}/i);
     if (specificTicketMatch) {
       const queriedTicketId = specificTicketMatch[0];
-      const ticketLookup = knowledgeService.findTicket(queriedTicketId, session.user);
+      const ticketLookup = await knowledgeService.findTicketAsync(queriedTicketId, session.user);
 
       if (ticketLookup && ticketLookup.unauthorized) {
         // Catat insiden akses tidak sah ke security log
@@ -342,9 +451,7 @@ ${relevantContext}
           ? `Untuk alasan privasi dan keamanan data, Anda perlu **login** terlebih dahulu ke portal untuk melihat perkembangan tiket **${queriedTicketId}**.`
           : `Maaf, Anda tidak memiliki hak otorisasi untuk melihat tiket **${queriedTicketId}** karena tiket tersebut bukan dilaporkan oleh akun Anda. Anda hanya dapat melacak tiket milik akun Anda sendiri.`;
 
-        session.messages.push({ role: 'user', content: message, timestamp: new Date().toISOString() });
-        session.messages.push({ role: 'assistant', content: denialMessage, timestamp: new Date().toISOString() });
-        this.saveSessions();
+        await this.persistTurn(session, message, denialMessage);
 
         if (onChunk) onChunk(denialMessage);
 
@@ -357,8 +464,8 @@ ${relevantContext}
       }
     }
 
-    // 4. Ambil RAG Context yang Terisolasi per User & Tersanitasi
-    const relevantContext = knowledgeService.getRelevantContext(message, session.user);
+    // 4. Ambil RAG Context langsung dari PostgreSQL (Terisolasi per User & Tersanitasi)
+    const relevantContext = await knowledgeService.getRelevantContextAsync(message, session.user);
 
     // Bangun prompt system dengan RAG context data boundary
     const systemPrompt = this.buildSystemPrompt(relevantContext);
@@ -375,12 +482,6 @@ ${relevantContext}
       { role: 'user', content: message }
     ];
 
-    session.messages.push({
-      role: 'user',
-      content: message,
-      timestamp: new Date().toISOString()
-    });
-
     let assistantResponse = '';
 
     if (onChunk) {
@@ -395,13 +496,7 @@ ${relevantContext}
     // 5. Output Filtering (Cek kebocoran kunci/prompt/path sebelum simpan)
     assistantResponse = this.filterOutput(assistantResponse, { ip, sessionId });
 
-    session.messages.push({
-      role: 'assistant',
-      content: assistantResponse,
-      timestamp: new Date().toISOString()
-    });
-
-    this.saveSessions();
+    await this.persistTurn(session, message, assistantResponse, turnStartedAt);
 
     return {
       sessionId: session.id,
