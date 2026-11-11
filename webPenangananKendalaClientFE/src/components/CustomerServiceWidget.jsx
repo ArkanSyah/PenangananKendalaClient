@@ -5,12 +5,13 @@ import { useAuth } from '../AuthContext';
 const CS_API_BASE = 'http://localhost:3001';
 
 export function CustomerServiceWidget() {
-  const { user } = useAuth();
+  const { user, loading = false } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
   const [isSending, setIsSending] = useState(false);
   const messagesEndRef = useRef(null);
+  const abortControllerRef = useRef(null);
 
   // Ambil atau generate session id dinamis (User-Scoped Session)
   // Tamu (Belum Login) menggunakan session terisolasi 'sess_guest_...'
@@ -52,8 +53,12 @@ export function CustomerServiceWidget() {
 
   // Muat riwayat percakapan setiap kali sessionId / status user berubah (Reaktif instan)
   useEffect(() => {
-    loadHistory(sessionId, user);
-  }, [sessionId, user?.id]);
+    if (loading) return;
+    abortControllerRef.current?.abort();
+    const historyController = new AbortController();
+    loadHistory(sessionId, user, historyController.signal);
+    return () => historyController.abort();
+  }, [sessionId, user?.id, loading]);
 
   useEffect(() => {
     if (isOpen) {
@@ -65,12 +70,12 @@ export function CustomerServiceWidget() {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
-  const loadHistory = async (targetSessionId = sessionId, currentUser = user) => {
+  const loadHistory = async (targetSessionId = sessionId, currentUser = user, signal) => {
     try {
       const userQuery = currentUser?.id
         ? `?userId=${currentUser.id}&role=${encodeURIComponent(currentUser.role || '')}&name=${encodeURIComponent(currentUser.name || '')}`
         : '';
-      const res = await fetch(`${CS_API_BASE}/api/history/${targetSessionId}${userQuery}`);
+      const res = await fetch(`${CS_API_BASE}/api/history/${targetSessionId}${userQuery}`, { signal });
       if (!res.ok) throw new Error();
       const data = await res.json();
       if (data.data && data.data.length > 0) {
@@ -78,7 +83,8 @@ export function CustomerServiceWidget() {
       } else {
         setMessages([getWelcomeMessage(currentUser)]);
       }
-    } catch {
+    } catch (err) {
+      if (err?.name === 'AbortError') return;
       setMessages([getWelcomeMessage(currentUser)]);
     }
   };
@@ -86,6 +92,8 @@ export function CustomerServiceWidget() {
   const handleReset = async () => {
     if (!window.confirm('Hapus seluruh riwayat percakapan CS?')) return;
     try {
+      abortControllerRef.current?.abort();
+      setIsSending(false);
       await fetch(`${CS_API_BASE}/api/reset/${sessionId}`, { method: 'POST' });
       setMessages([
         {
@@ -107,6 +115,8 @@ export function CustomerServiceWidget() {
 
     setInput('');
     setIsSending(true);
+    const controller = new AbortController();
+    abortControllerRef.current = controller;
 
     const userMsg = {
       role: 'user',
@@ -120,6 +130,7 @@ export function CustomerServiceWidget() {
       const res = await fetch(`${CS_API_BASE}/api/chat`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        signal: controller.signal,
         body: JSON.stringify({
           sessionId,
           message: text,
@@ -129,7 +140,20 @@ export function CustomerServiceWidget() {
       });
 
       if (!res.ok) {
-        throw new Error(`Server status ${res.status}`);
+        const errBody = await res.json().catch(() => null);
+        const errMessage = errBody?.error || `Server status ${res.status}`;
+        if (res.status === 429 || res.status === 400) {
+          setMessages((prev) => [
+            ...prev,
+            {
+              role: 'assistant',
+              content: `⚠️ ${errMessage}`,
+              timestamp: new Date().toISOString()
+            }
+          ]);
+          return;
+        }
+        throw new Error(errMessage);
       }
 
       // Placeholder bot message yang akan di-update streaming
@@ -145,11 +169,14 @@ export function CustomerServiceWidget() {
 
       while (true) {
         const { done, value } = await reader.read();
-        if (done) break;
+        if (value) {
+          buffer += decoder.decode(value, { stream: !done });
+        } else if (done) {
+          buffer += decoder.decode();
+        }
 
-        buffer += decoder.decode(value, { stream: true });
         const lines = buffer.split('\n');
-        buffer = lines.pop();
+        buffer = done ? '' : lines.pop();
 
         for (const line of lines) {
           const trimmed = line.trim();
@@ -182,8 +209,13 @@ export function CustomerServiceWidget() {
             }
           } catch {}
         }
+
+        if (done) break;
       }
     } catch (err) {
+      if (err.name === 'AbortError') {
+        return;
+      }
       setMessages((prev) => [
         ...prev,
         {
@@ -193,7 +225,9 @@ export function CustomerServiceWidget() {
         }
       ]);
     } finally {
-      setIsSending(false);
+      if (abortControllerRef.current === controller) {
+        setIsSending(false);
+      }
     }
   };
 
