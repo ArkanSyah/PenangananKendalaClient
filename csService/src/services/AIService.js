@@ -30,62 +30,73 @@ class AIService {
       headers['Authorization'] = `Bearer ${this.apiKey}`;
     }
 
-    let response;
+    let fullContent = '';
+
     try {
-      response = await fetch(url, {
+      const response = await fetch(url, {
         method: 'POST',
         headers,
         body: JSON.stringify(payload),
-        signal: AbortSignal.timeout(12000)
+        signal: AbortSignal.timeout(60000)
       });
 
       if (!response.ok) {
         throw new Error(`AI API HTTP ${response.status}`);
       }
+
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder('utf-8');
+      let buffer = '';
+      let streamDone = false;
+
+      while (!streamDone) {
+        const { done, value } = await reader.read();
+        if (value) {
+          buffer += decoder.decode(value, { stream: !done });
+        } else if (done) {
+          buffer += decoder.decode();
+        }
+
+        const lines = buffer.split('\n');
+        buffer = done ? '' : lines.pop();
+
+        for (const line of lines) {
+          const trimmed = line.trim();
+          if (!trimmed || !trimmed.startsWith('data: ')) continue;
+
+          const dataStr = trimmed.slice(6);
+          if (dataStr === '[DONE]') {
+            streamDone = true;
+            break;
+          }
+
+          try {
+            const json = JSON.parse(dataStr);
+            const delta = json.choices?.[0]?.delta;
+            if (delta?.content) {
+              fullContent += delta.content;
+              if (onChunk) {
+                onChunk(delta.content);
+              }
+            }
+          } catch (e) {
+            // Abaikan chunk non-JSON
+          }
+        }
+
+        if (done) break;
+      }
     } catch (err) {
-      // Fallback cerdas jika proxy AI offline (misal pada lingkungan CI/CD atau dev tanpa proxy lokal)
+      console.warn('[AIService] Stream error:', err.message);
+    }
+
+    // Jika terjadi timeout, error, atau respons kosong tanpa konten
+    if (!fullContent.trim()) {
       const fallback = this.generateOfflineFallback(messages);
       if (onChunk) {
         onChunk(fallback);
       }
       return fallback;
-    }
-
-    let fullContent = '';
-    const reader = response.body.getReader();
-    const decoder = new TextDecoder('utf-8');
-    let buffer = '';
-
-    while (true) {
-      const { done, value } = await reader.read();
-      if (done) break;
-
-      buffer += decoder.decode(value, { stream: true });
-      const lines = buffer.split('\n');
-      buffer = lines.pop();
-
-      for (const line of lines) {
-        const trimmed = line.trim();
-        if (!trimmed || !trimmed.startsWith('data: ')) continue;
-
-        const dataStr = trimmed.slice(6);
-        if (dataStr === '[DONE]') {
-          break;
-        }
-
-        try {
-          const json = JSON.parse(dataStr);
-          const delta = json.choices?.[0]?.delta;
-          if (delta?.content) {
-            fullContent += delta.content;
-            if (onChunk) {
-              onChunk(delta.content);
-            }
-          }
-        } catch (e) {
-          // Abaikan chunk non-JSON
-        }
-      }
     }
 
     return fullContent;
@@ -117,7 +128,10 @@ class AIService {
       if (sysMsg.includes('Belum Login (Tamu / Guest)')) {
         return 'Status Anda saat ini: Belum Login (Tamu / Guest). Silakan login ke portal untuk mengakses tiket pribadi Anda.';
       }
-      return 'Sudah login. Anda terautentikasi sebagai Corporate Client (Role: client, User ID: 6). Sebutkan ID tiket untuk mengecek status penanganan kendala.';
+      const nama = sysMsg.match(/- Nama:\s*([^\n]+)/)?.[1]?.trim() || 'Pengguna Terdaftar';
+      const role = sysMsg.match(/- Role:\s*([^\n]+)/)?.[1]?.trim() || 'client';
+      const userId = sysMsg.match(/- User ID:\s*([^\n]+)/)?.[1]?.trim() || '-';
+      return `Sudah login. Anda terautentikasi sebagai **${nama}** (Role: ${role}, User ID: ${userId}). Sebutkan ID tiket untuk mengecek status penanganan kendala.`;
     }
     return 'Halo! Saya **TeknoBot**, asisten AI resmi untuk **Sistem Penanganan Kendala Client**. Ada kendala teknis atau tiket IT yang bisa saya bantu?';
   }

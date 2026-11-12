@@ -69,4 +69,16 @@ describe('ChatService Core Functionality & Validation', () => {
     assert.equal(resetSuccess, true);
     assert.equal(chatService.sessions.has(sessId), false);
   });
+
+  test('Mencegah turn in-flight menyimpan ulang sesi setelah sesi di-reset', async () => {
+    const sessId = 'session-reset-race-' + Date.now();
+    const session = chatService.getSession(sessId);
+    const turnStartedAt = Date.now() - 500;
+
+    await chatService.resetSessionAsync(sessId);
+    await chatService.persistTurn(session, 'Pesan sebelum reset', 'Balasan terlambat', turnStartedAt);
+
+    assert.equal(chatService.sessions.has(sessId), false);
+    assert.equal(session.messages.length, 0);
+  });
 });

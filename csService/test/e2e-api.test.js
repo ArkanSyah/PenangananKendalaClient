@@ -4,6 +4,8 @@ import http from 'node:http';
 import express from 'express';
 import cors from 'cors';
 import chatRoutes from '../src/routes/chatRoutes.js';
+import { knowledgeService } from '../src/services/KnowledgeService.js';
+import { postgres } from '../src/db/postgres.js';
 
 describe('Customer Service AI End-to-End (E2E) API HTTP Test Suite', () => {
   let server;
@@ -11,6 +13,8 @@ describe('Customer Service AI End-to-End (E2E) API HTTP Test Suite', () => {
   const BASE_URL = `http://127.0.0.1:${PORT}`;
 
   before(async () => {
+    await knowledgeService.init();
+
     const app = express();
     app.use(cors());
     app.use(express.json());
@@ -27,6 +31,7 @@ describe('Customer Service AI End-to-End (E2E) API HTTP Test Suite', () => {
     if (server) {
       await new Promise((resolve) => server.close(resolve));
     }
+    await postgres.close();
   });
 
   test('E2E HTTP: GET /api/health mengembalikan status OK dan metrik knowledge base', async () => {
@@ -36,7 +41,7 @@ describe('Customer Service AI End-to-End (E2E) API HTTP Test Suite', () => {
     const data = await res.json();
     assert.equal(data.status, 'ok');
     assert.match(data.service, /Penanganan Kendala Client/i);
-    assert.equal(data.knowledgeBase.totalTickets, 8);
+    assert.ok(data.knowledgeBase.totalTickets >= 8, 'Minimal harus memiliki 8 tiket di database/fallback');
     assert.equal(data.knowledgeBase.totalCategories, 5);
   });
 
@@ -181,5 +186,16 @@ describe('Customer Service AI End-to-End (E2E) API HTTP Test Suite', () => {
     assert.ok(text.includes('data: {"chunk":'), 'Harus menyertakan event data chunk');
     assert.ok(text.includes('data: [DONE]'), 'Harus diakhiri dengan event [DONE]');
     assert.ok(text.includes('TeknoBot'), 'Payload chunk harus memuat identitas TeknoBot');
+  });
+
+  test('E2E HTTP: Parameter query non-numerik/negatif pada endpoint tidak menyebabkan error HTTP 500', async () => {
+    const res = await fetch(`${BASE_URL}/api/tickets?userId=bukanangka&limit=-10&offset=-3`);
+    assert.equal(res.status, 200);
+    const body = await res.json();
+    assert.equal(body.status, 'success');
+    assert.ok(Array.isArray(body.data));
+
+    const custInvalid = await fetch(`${BASE_URL}/api/customers?userId=abc`);
+    assert.equal(custInvalid.status, 401);
   });
 });

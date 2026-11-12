@@ -1,38 +1,74 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { MessageSquare, X, RotateCcw, Send, Bot, CheckCircle, ChevronRight, ShieldCheck } from 'lucide-react';
-import axios from 'axios';
 import { useAuth } from '../AuthContext';
 
-const csApi = axios.create({
-  baseURL: 'http://100.114.187.77:3001', // Sesuaikan dengan IP/URL server AI CS
-  withCredentials: true,
-  headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' }
-});
+const resolveCsApiBase = () => {
+  if (import.meta.env.VITE_CS_API_BASE) {
+    return import.meta.env.VITE_CS_API_BASE;
+  }
+  if (typeof window !== 'undefined' && window.location?.hostname) {
+    return `${window.location.protocol}//${window.location.hostname}:3001`;
+  }
+  return 'http://localhost:3001';
+};
 
-const CS_API_BASE = 'http://100.114.187.77:3001';
+const CS_API_BASE = resolveCsApiBase();
 
 export function CustomerServiceWidget() {
-  const { user } = useAuth();
+  const { user, loading = false } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
   const [isSending, setIsSending] = useState(false);
   const messagesEndRef = useRef(null);
+  const abortControllerRef = useRef(null);
 
-  // Ambil atau generate session id
-  const [sessionId] = useState(() => {
-    let saved = localStorage.getItem('cs_session_id');
-    if (!saved) {
-      saved = 'sess_' + Math.random().toString(36).substring(2, 10);
-      localStorage.setItem('cs_session_id', saved);
+  // Ambil atau generate session id dinamis (User-Scoped Session)
+  // Tamu (Belum Login) menggunakan session terisolasi 'sess_guest_...'
+  // Pengguna Terautentikasi otomatis menggunakan 'sess_user_${user.id}'
+  const getGuestSessionId = () => {
+    let saved = localStorage.getItem('cs_guest_session_id') || localStorage.getItem('cs_session_id');
+    if (!saved || saved.startsWith('sess_user_')) {
+      saved = 'sess_guest_' + Math.random().toString(36).substring(2, 10);
+      localStorage.setItem('cs_guest_session_id', saved);
     }
     return saved;
-  });
+  };
 
-  // Sambutan awal
+  const sessionId = user?.id ? `sess_user_${user.id}` : getGuestSessionId();
+
+  const getWelcomeMessage = (currentUser) => {
+    if (currentUser) {
+      const roleLabels = {
+        client: 'Klien',
+        admin: 'Administrator',
+        service_desk: 'Service Desk',
+        project_manager: 'Project Manager',
+        programmer: 'Programmer',
+        owner: 'Pimpinan'
+      };
+      const roleLabel = roleLabels[currentUser.role] || currentUser.role;
+      return {
+        role: 'assistant',
+        content: `Halo **${currentUser.name}**! 👋\n\nAnda sekarang terhubung sebagai **${roleLabel}**. Riwayat sesi dan tiket kendala Anda telah disinkronkan secara aman. Ada kendala IT atau status tiket yang ingin Anda cek?`,
+        timestamp: new Date().toISOString()
+      };
+    }
+    return {
+      role: 'assistant',
+      content: 'Halo! 👋 Selamat datang di **Sistem Penanganan Kendala Client**.\n\nSaya **TeknoBot**, asisten CS & Helpdesk AI. Ada kendala IT yang bisa saya bantu cek (misal status tiket kendala, panduan penanganan error 500, akun login terkunci, atau eskalasi ke Service Desk)?',
+      timestamp: new Date().toISOString()
+    };
+  };
+
+  // Muat riwayat percakapan setiap kali sessionId / status user berubah (Reaktif instan)
   useEffect(() => {
-    loadHistory();
-  }, [sessionId]);
+    if (loading) return;
+    abortControllerRef.current?.abort();
+    const historyController = new AbortController();
+    loadHistory(sessionId, user, historyController.signal);
+    return () => historyController.abort();
+  }, [sessionId, user?.id, loading]);
 
   useEffect(() => {
     if (isOpen) {
@@ -44,40 +80,43 @@ export function CustomerServiceWidget() {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
-  const loadHistory = async () => {
+  const loadHistory = async (targetSessionId = sessionId, currentUser = user, signal) => {
     try {
-      const res = await csApi.get(`/api/history/${sessionId}`);
-      const data = res.data;
+      const userQuery = currentUser?.id
+        ? `?userId=${currentUser.id}&role=${encodeURIComponent(currentUser.role || '')}&name=${encodeURIComponent(currentUser.name || '')}`
+        : '';
+      const res = await fetch(`${CS_API_BASE}/api/history/${targetSessionId}${userQuery}`, {
+        credentials: 'include',
+        signal,
+      });
+      if (!res.ok) throw new Error();
+      const data = await res.json();
       if (data.data && data.data.length > 0) {
         setMessages(data.data);
       } else {
-        setMessages([
-          {
-            role: 'assistant',
-            content: 'Halo! 👋 Selamat datang di **Sistem Penanganan Kendala Client**.\n\nSaya **TeknoBot**, asisten CS & Helpdesk AI. Ada kendala IT yang bisa saya bantu cek (misal status tiket kendala, panduan penanganan error 500, akun login terkunci, atau eskalasi ke Service Desk)?',
-            timestamp: new Date().toISOString()
-          }
-        ]);
+        setMessages([getWelcomeMessage(currentUser)]);
       }
-    } catch {
-      setMessages([
-        {
-          role: 'assistant',
-          content: 'Halo! 👋 Selamat datang di **Sistem Penanganan Kendala Client**.\n\nSaya **TeknoBot**, asisten CS & Helpdesk AI. Ada kendala IT yang bisa saya bantu cek (misal status tiket kendala, panduan penanganan error 500, akun login terkunci, atau eskalasi ke Service Desk)?',
-          timestamp: new Date().toISOString()
-        }
-      ]);
+    } catch (err) {
+      if (err?.name === 'AbortError') return;
+      setMessages([getWelcomeMessage(currentUser)]);
     }
   };
 
   const handleReset = async () => {
     if (!window.confirm('Hapus seluruh riwayat percakapan CS?')) return;
     try {
-      await csApi.post(`/api/reset/${sessionId}`);
+      abortControllerRef.current?.abort();
+      setIsSending(false);
+      await fetch(`${CS_API_BASE}/api/reset/${sessionId}`, {
+        method: 'POST',
+        credentials: 'include',
+      });
       setMessages([
         {
           role: 'assistant',
-          content: 'Riwayat percakapan telah dibersihkan. ✨\n\nAda hal lain yang bisa TeknoBot bantu?',
+          content: user
+            ? `Riwayat percakapan telah dibersihkan. ✨\n\nAda hal lain yang bisa TeknoBot bantu untuk Anda, **${user.name}**?`
+            : 'Riwayat percakapan telah dibersihkan. ✨\n\nAda hal lain yang bisa TeknoBot bantu?',
           timestamp: new Date().toISOString()
         }
       ]);
@@ -92,6 +131,8 @@ export function CustomerServiceWidget() {
 
     setInput('');
     setIsSending(true);
+    const controller = new AbortController();
+    abortControllerRef.current = controller;
 
     const userMsg = {
       role: 'user',
@@ -106,6 +147,7 @@ export function CustomerServiceWidget() {
         method: 'POST',
         credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
+        signal: controller.signal,
         body: JSON.stringify({
           sessionId,
           message: text,
@@ -115,7 +157,20 @@ export function CustomerServiceWidget() {
       });
 
       if (!res.ok) {
-        throw new Error(`Server status ${res.status}`);
+        const errBody = await res.json().catch(() => null);
+        const errMessage = errBody?.error || `Server status ${res.status}`;
+        if (res.status === 429 || res.status === 400) {
+          setMessages((prev) => [
+            ...prev,
+            {
+              role: 'assistant',
+              content: `⚠️ ${errMessage}`,
+              timestamp: new Date().toISOString()
+            }
+          ]);
+          return;
+        }
+        throw new Error(errMessage);
       }
 
       // Placeholder bot message yang akan di-update streaming
@@ -131,11 +186,14 @@ export function CustomerServiceWidget() {
 
       while (true) {
         const { done, value } = await reader.read();
-        if (done) break;
+        if (value) {
+          buffer += decoder.decode(value, { stream: !done });
+        } else if (done) {
+          buffer += decoder.decode();
+        }
 
-        buffer += decoder.decode(value, { stream: true });
         const lines = buffer.split('\n');
-        buffer = lines.pop();
+        buffer = done ? '' : lines.pop();
 
         for (const line of lines) {
           const trimmed = line.trim();
@@ -168,8 +226,13 @@ export function CustomerServiceWidget() {
             }
           } catch {}
         }
+
+        if (done) break;
       }
     } catch (err) {
+      if (err.name === 'AbortError') {
+        return;
+      }
       setMessages((prev) => [
         ...prev,
         {
@@ -179,7 +242,9 @@ export function CustomerServiceWidget() {
         }
       ]);
     } finally {
-      setIsSending(false);
+      if (abortControllerRef.current === controller) {
+        setIsSending(false);
+      }
     }
   };
 

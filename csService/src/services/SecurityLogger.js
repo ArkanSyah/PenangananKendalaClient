@@ -1,6 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { postgres } from '../db/postgres.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -54,6 +55,18 @@ class SecurityLogger {
       console.error('[SecurityLogger Error]: Gagal menulis log:', err.message);
     }
 
+    if (postgres.isDbConnected()) {
+      postgres
+        .query(
+          `INSERT INTO security_logs (event_type, severity, ip, session_id, user_id, details)
+           VALUES ($1, $2, $3, $4, $5, $6)`,
+          [entry.eventType, entry.severity, ip, sessionId, userId, JSON.stringify(details)]
+        )
+        .catch((err) => {
+          console.error('[SecurityLogger PG Error]:', err.message);
+        });
+    }
+
     if (entry.severity === 'ALERT' || entry.severity === 'CRITICAL') {
       console.warn(`[SECURITY ALERT] ${entry.eventType} dari IP=${ip} Sesi=${sessionId}:`, details);
     }
@@ -70,6 +83,25 @@ class SecurityLogger {
       }).filter(Boolean);
     } catch {
       return [];
+    }
+  }
+
+  async getRecentEventsAsync(limit = 50) {
+    if (!postgres.isDbConnected()) {
+      return this.getRecentEvents(limit);
+    }
+    try {
+      const safeLimit = Math.min(Math.max(limit || 50, 1), 200);
+      const res = await postgres.query(
+        `SELECT id, event_type AS "eventType", severity, ip, session_id AS "sessionId", user_id AS "userId", details, created_at AS timestamp
+         FROM security_logs
+         ORDER BY id DESC
+         LIMIT $1`,
+        [safeLimit]
+      );
+      return res.rows;
+    } catch {
+      return this.getRecentEvents(limit);
     }
   }
 

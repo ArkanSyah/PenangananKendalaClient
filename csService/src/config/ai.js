@@ -16,6 +16,16 @@ export const config = {
     apiKey: process.env.AI_API_KEY || '',
     model: process.env.AI_MODEL || 'ag/gemini-3.8-flash-high',
   },
+  db: {
+    enabled: process.env.DB_ENABLED === 'true' || Boolean(process.env.DATABASE_URL),
+    connectionString: process.env.DATABASE_URL || null,
+    host: process.env.PGHOST || '127.0.0.1',
+    port: parseInt(process.env.PGPORT || '5432', 10),
+    database: process.env.PGDATABASE || 'teknobot_cs_db',
+    user: process.env.PGUSER || 'teknobot_cs',
+    password: process.env.PGPASSWORD || '',
+    max: parseInt(process.env.PGPOOL_MAX || '10', 10),
+  },
   paths: {
     tickets: path.resolve(projectRoot, process.env.KNOWLEDGE_TICKETS_PATH || './data/data_kendala_client.json'),
     faq: path.resolve(projectRoot, process.env.KNOWLEDGE_FAQ_PATH || './data/faq.json'),
