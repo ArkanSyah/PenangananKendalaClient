@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import { useAuth } from '../AuthContext';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { ShieldAlert } from 'lucide-react';
 
 export const LoginScreen = () => {
   const { login } = useAuth();
+  const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -16,6 +17,7 @@ export const LoginScreen = () => {
     setLoading(true);
     try {
       await login(email, password);
+      navigate('/', { replace: true });
     } catch (err) {
       setError(err.message || 'Login failed. Please check credentials.');
     } finally {
@@ -28,6 +30,7 @@ export const LoginScreen = () => {
     setLoading(true);
     try {
       await login(roleEmail, 'password');
+      navigate('/', { replace: true });
     } catch (err) {
       setError(err.message || 'Login failed.');
     } finally {

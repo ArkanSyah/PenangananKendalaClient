@@ -2,7 +2,17 @@ import React, { useState, useEffect, useRef } from 'react';
 import { MessageSquare, X, RotateCcw, Send, Bot, CheckCircle, ChevronRight, ShieldCheck } from 'lucide-react';
 import { useAuth } from '../AuthContext';
 
-const CS_API_BASE = 'http://localhost:3001';
+const resolveCsApiBase = () => {
+  if (import.meta.env.VITE_CS_API_BASE) {
+    return import.meta.env.VITE_CS_API_BASE;
+  }
+  if (typeof window !== 'undefined' && window.location?.hostname) {
+    return `${window.location.protocol}//${window.location.hostname}:3001`;
+  }
+  return 'http://localhost:3001';
+};
+
+const CS_API_BASE = resolveCsApiBase();
 
 export function CustomerServiceWidget() {
   const { user, loading = false } = useAuth();
@@ -75,7 +85,10 @@ export function CustomerServiceWidget() {
       const userQuery = currentUser?.id
         ? `?userId=${currentUser.id}&role=${encodeURIComponent(currentUser.role || '')}&name=${encodeURIComponent(currentUser.name || '')}`
         : '';
-      const res = await fetch(`${CS_API_BASE}/api/history/${targetSessionId}${userQuery}`, { signal });
+      const res = await fetch(`${CS_API_BASE}/api/history/${targetSessionId}${userQuery}`, {
+        credentials: 'include',
+        signal,
+      });
       if (!res.ok) throw new Error();
       const data = await res.json();
       if (data.data && data.data.length > 0) {
@@ -94,7 +107,10 @@ export function CustomerServiceWidget() {
     try {
       abortControllerRef.current?.abort();
       setIsSending(false);
-      await fetch(`${CS_API_BASE}/api/reset/${sessionId}`, { method: 'POST' });
+      await fetch(`${CS_API_BASE}/api/reset/${sessionId}`, {
+        method: 'POST',
+        credentials: 'include',
+      });
       setMessages([
         {
           role: 'assistant',
@@ -129,6 +145,7 @@ export function CustomerServiceWidget() {
     try {
       const res = await fetch(`${CS_API_BASE}/api/chat`, {
         method: 'POST',
+        credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
         signal: controller.signal,
         body: JSON.stringify({

@@ -34,8 +34,8 @@ class TicketController extends Controller
         } elseif ($user->role === 'client') {
             // Clients can only see their own tickets
             $query->where('user_id', $user->id);
-        } elseif ($user->role === 'project_manager' || $user->role === 'owner') {
-            // PM and Owner only see escalated/assigned/progress/resolved/closed tickets, not raw open ones
+        } elseif ($user->role === 'project_manager') {
+            // PM only sees escalated/assigned/progress/resolved/closed tickets, not raw open ones
             $query->where('status', '!=', 'open');
         }
 
